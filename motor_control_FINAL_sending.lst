@@ -1,0 +1,1668 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1069 (Apr 23 2015) (MSVC)
+0000              4   ; This file was generated Tue Mar 29 17:27:07 2016
+0000              5   ;--------------------------------------------------------
+                  5   $name motor_control_FINAL_sending
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _main
+0000             27            public _getchar1
+0000             28            public _putchar1
+0000             29            public _UART1_Init
+0000             30            public _nunchuck_getdata
+0000             31            public _nunchuck_init
+0000             32            public _I2C_stop
+0000             33            public _I2C_start
+0000             34            public _I2C_read
+0000             35            public _I2C_write
+0000             36            public _Timer4ms
+0000             37            public __c51_external_startup
+0000             38            public _nunchuck_init_PARM_1
+0000             39   ;--------------------------------------------------------
+0000             40   ; Special Function Registers
+0000             41   ;--------------------------------------------------------
+0000             42   _P0             DATA 0x80
+0000             43   _SP             DATA 0x81
+0000             44   _DPL            DATA 0x82
+0000             45   _DPH            DATA 0x83
+0000             46   _EMI0TC         DATA 0x84
+0000             47   _EMI0CF         DATA 0x85
+0000             48   _OSCLCN         DATA 0x86
+0000             49   _PCON           DATA 0x87
+0000             50   _TCON           DATA 0x88
+0000             51   _TMOD           DATA 0x89
+0000             52   _TL0            DATA 0x8a
+0000             53   _TL1            DATA 0x8b
+0000             54   _TH0            DATA 0x8c
+0000             55   _TH1            DATA 0x8d
+0000             56   _CKCON          DATA 0x8e
+0000             57   _PSCTL          DATA 0x8f
+0000             58   _P1             DATA 0x90
+0000             59   _TMR3CN         DATA 0x91
+0000             60   _TMR4CN         DATA 0x91
+0000             61   _TMR3RLL        DATA 0x92
+0000             62   _TMR4RLL        DATA 0x92
+0000             63   _TMR3RLH        DATA 0x93
+0000             64   _TMR4RLH        DATA 0x93
+0000             65   _TMR3L          DATA 0x94
+0000             66   _TMR4L          DATA 0x94
+0000             67   _TMR3H          DATA 0x95
+0000             68   _TMR4H          DATA 0x95
+0000             69   _USB0ADR        DATA 0x96
+0000             70   _USB0DAT        DATA 0x97
+0000             71   _SCON           DATA 0x98
+0000             72   _SCON0          DATA 0x98
+0000             73   _SBUF           DATA 0x99
+0000             74   _SBUF0          DATA 0x99
+0000             75   _CPT1CN         DATA 0x9a
+0000             76   _CPT0CN         DATA 0x9b
+0000             77   _CPT1MD         DATA 0x9c
+0000             78   _CPT0MD         DATA 0x9d
+0000             79   _CPT1MX         DATA 0x9e
+0000             80   _CPT0MX         DATA 0x9f
+0000             81   _P2             DATA 0xa0
+0000             82   _SPI0CFG        DATA 0xa1
+0000             83   _SPI0CKR        DATA 0xa2
+0000             84   _SPI0DAT        DATA 0xa3
+0000             85   _P0MDOUT        DATA 0xa4
+0000             86   _P1MDOUT        DATA 0xa5
+0000             87   _P2MDOUT        DATA 0xa6
+0000             88   _P3MDOUT        DATA 0xa7
+0000             89   _IE             DATA 0xa8
+0000             90   _CLKSEL         DATA 0xa9
+0000             91   _EMI0CN         DATA 0xaa
+0000             92   __XPAGE         DATA 0xaa
+0000             93   _SBCON1         DATA 0xac
+0000             94   _P4MDOUT        DATA 0xae
+0000             95   _PFE0CN         DATA 0xaf
+0000             96   _P3             DATA 0xb0
+0000             97   _OSCXCN         DATA 0xb1
+0000             98   _OSCICN         DATA 0xb2
+0000             99   _OSCICL         DATA 0xb3
+0000            100   _SBRLL1         DATA 0xb4
+0000            101   _SBRLH1         DATA 0xb5
+0000            102   _FLSCL          DATA 0xb6
+0000            103   _FLKEY          DATA 0xb7
+0000            104   _IP             DATA 0xb8
+0000            105   _CLKMUL         DATA 0xb9
+0000            106   _SMBTC          DATA 0xb9
+0000            107   _AMX0N          DATA 0xba
+0000            108   _AMX0P          DATA 0xbb
+0000            109   _ADC0CF         DATA 0xbc
+0000            110   _ADC0L          DATA 0xbd
+0000            111   _ADC0H          DATA 0xbe
+0000            112   _SFRPAGE        DATA 0xbf
+0000            113   _SMB0CN         DATA 0xc0
+0000            114   _SMB1CN         DATA 0xc0
+0000            115   _SMB0CF         DATA 0xc1
+0000            116   _SMB1CF         DATA 0xc1
+0000            117   _SMB0DAT        DATA 0xc2
+0000            118   _SMB1DAT        DATA 0xc2
+0000            119   _ADC0GTL        DATA 0xc3
+0000            120   _ADC0GTH        DATA 0xc4
+0000            121   _ADC0LTL        DATA 0xc5
+0000            122   _ADC0LTH        DATA 0xc6
+0000            123   _P4             DATA 0xc7
+0000            124   _TMR2CN         DATA 0xc8
+0000            125   _TMR5CN         DATA 0xc8
+0000            126   _REG01CN        DATA 0xc9
+0000            127   _TMR2RLL        DATA 0xca
+0000            128   _TMR5RLL        DATA 0xca
+0000            129   _TMR2RLH        DATA 0xcb
+0000            130   _TMR5RLH        DATA 0xcb
+0000            131   _TMR2L          DATA 0xcc
+0000            132   _TMR5L          DATA 0xcc
+0000            133   _TMR2H          DATA 0xcd
+0000            134   _TMR5H          DATA 0xcd
+0000            135   _SMB0ADM        DATA 0xce
+0000            136   _SMB1ADM        DATA 0xce
+0000            137   _SMB0ADR        DATA 0xcf
+0000            138   _SMB1ADR        DATA 0xcf
+0000            139   _PSW            DATA 0xd0
+0000            140   _REF0CN         DATA 0xd1
+0000            141   _SCON1          DATA 0xd2
+0000            142   _SBUF1          DATA 0xd3
+0000            143   _P0SKIP         DATA 0xd4
+0000            144   _P1SKIP         DATA 0xd5
+0000            145   _P2SKIP         DATA 0xd6
+0000            146   _USB0XCN        DATA 0xd7
+0000            147   _PCA0CN         DATA 0xd8
+0000            148   _PCA0MD         DATA 0xd9
+0000            149   _PCA0CPM0       DATA 0xda
+0000            150   _PCA0CPM1       DATA 0xdb
+0000            151   _PCA0CPM2       DATA 0xdc
+0000            152   _PCA0CPM3       DATA 0xdd
+0000            153   _PCA0CPM4       DATA 0xde
+0000            154   _P3SKIP         DATA 0xdf
+0000            155   _ACC            DATA 0xe0
+0000            156   _XBR0           DATA 0xe1
+0000            157   _XBR1           DATA 0xe2
+0000            158   _XBR2           DATA 0xe3
+0000            159   _IT01CF         DATA 0xe4
+0000            160   _CKCON1         DATA 0xe4
+0000            161   _SMOD1          DATA 0xe5
+0000            162   _EIE1           DATA 0xe6
+0000            163   _EIE2           DATA 0xe7
+0000            164   _ADC0CN         DATA 0xe8
+0000            165   _PCA0CPL1       DATA 0xe9
+0000            166   _PCA0CPH1       DATA 0xea
+0000            167   _PCA0CPL2       DATA 0xeb
+0000            168   _PCA0CPH2       DATA 0xec
+0000            169   _PCA0CPL3       DATA 0xed
+0000            170   _PCA0CPH3       DATA 0xee
+0000            171   _RSTSRC         DATA 0xef
+0000            172   _B              DATA 0xf0
+0000            173   _P0MDIN         DATA 0xf1
+0000            174   _P1MDIN         DATA 0xf2
+0000            175   _P2MDIN         DATA 0xf3
+0000            176   _P3MDIN         DATA 0xf4
+0000            177   _P4MDIN         DATA 0xf5
+0000            178   _EIP1           DATA 0xf6
+0000            179   _EIP2           DATA 0xf7
+0000            180   _SPI0CN         DATA 0xf8
+0000            181   _PCA0L          DATA 0xf9
+0000            182   _PCA0H          DATA 0xfa
+0000            183   _PCA0CPL0       DATA 0xfb
+0000            184   _PCA0CPH0       DATA 0xfc
+0000            185   _PCA0CPL4       DATA 0xfd
+0000            186   _PCA0CPH4       DATA 0xfe
+0000            187   _VDM0CN         DATA 0xff
+0000            188   _DPTR           DATA 0x8382
+0000            189   _TMR2RL         DATA 0xcbca
+0000            190   _TMR3RL         DATA 0x9392
+0000            191   _TMR4RL         DATA 0x9392
+0000            192   _TMR5RL         DATA 0xcbca
+0000            193   _TMR2           DATA 0xcdcc
+0000            194   _TMR3           DATA 0x9594
+0000            195   _TMR4           DATA 0x9594
+0000            196   _TMR5           DATA 0xcdcc
+0000            197   _SBRL1          DATA 0xb5b4
+0000            198   _ADC0           DATA 0xbebd
+0000            199   _ADC0GT         DATA 0xc4c3
+0000            200   _ADC0LT         DATA 0xc6c5
+0000            201   _PCA0           DATA 0xfaf9
+0000            202   _PCA0CP1        DATA 0xeae9
+0000            203   _PCA0CP2        DATA 0xeceb
+0000            204   _PCA0CP3        DATA 0xeeed
+0000            205   _PCA0CP0        DATA 0xfcfb
+0000            206   _PCA0CP4        DATA 0xfefd
+0000            207   ;--------------------------------------------------------
+0000            208   ; special function bits
+0000            209   ;--------------------------------------------------------
+0000            210   _P0_0           BIT 0x80
+0000            211   _P0_1           BIT 0x81
+0000            212   _P0_2           BIT 0x82
+0000            213   _P0_3           BIT 0x83
+0000            214   _P0_4           BIT 0x84
+0000            215   _P0_5           BIT 0x85
+0000            216   _P0_6           BIT 0x86
+0000            217   _P0_7           BIT 0x87
+0000            218   _TF1            BIT 0x8f
+0000            219   _TR1            BIT 0x8e
+0000            220   _TF0            BIT 0x8d
+0000            221   _TR0            BIT 0x8c
+0000            222   _IE1            BIT 0x8b
+0000            223   _IT1            BIT 0x8a
+0000            224   _IE0            BIT 0x89
+0000            225   _IT0            BIT 0x88
+0000            226   _P1_0           BIT 0x90
+0000            227   _P1_1           BIT 0x91
+0000            228   _P1_2           BIT 0x92
+0000            229   _P1_3           BIT 0x93
+0000            230   _P1_4           BIT 0x94
+0000            231   _P1_5           BIT 0x95
+0000            232   _P1_6           BIT 0x96
+0000            233   _P1_7           BIT 0x97
+0000            234   _S0MODE         BIT 0x9f
+0000            235   _SCON0_6        BIT 0x9e
+0000            236   _MCE0           BIT 0x9d
+0000            237   _REN0           BIT 0x9c
+0000            238   _TB80           BIT 0x9b
+0000            239   _RB80           BIT 0x9a
+0000            240   _TI0            BIT 0x99
+0000            241   _RI0            BIT 0x98
+0000            242   _SCON_6         BIT 0x9e
+0000            243   _MCE            BIT 0x9d
+0000            244   _REN            BIT 0x9c
+0000            245   _TB8            BIT 0x9b
+0000            246   _RB8            BIT 0x9a
+0000            247   _TI             BIT 0x99
+0000            248   _RI             BIT 0x98
+0000            249   _P2_0           BIT 0xa0
+0000            250   _P2_1           BIT 0xa1
+0000            251   _P2_2           BIT 0xa2
+0000            252   _P2_3           BIT 0xa3
+0000            253   _P2_4           BIT 0xa4
+0000            254   _P2_5           BIT 0xa5
+0000            255   _P2_6           BIT 0xa6
+0000            256   _P2_7           BIT 0xa7
+0000            257   _EA             BIT 0xaf
+0000            258   _ESPI0          BIT 0xae
+0000            259   _ET2            BIT 0xad
+0000            260   _ES0            BIT 0xac
+0000            261   _ET1            BIT 0xab
+0000            262   _EX1            BIT 0xaa
+0000            263   _ET0            BIT 0xa9
+0000            264   _EX0            BIT 0xa8
+0000            265   _P3_0           BIT 0xb0
+0000            266   _P3_1           BIT 0xb1
+0000            267   _P3_2           BIT 0xb2
+0000            268   _P3_3           BIT 0xb3
+0000            269   _P3_4           BIT 0xb4
+0000            270   _P3_5           BIT 0xb5
+0000            271   _P3_6           BIT 0xb6
+0000            272   _P3_7           BIT 0xb7
+0000            273   _IP_7           BIT 0xbf
+0000            274   _PSPI0          BIT 0xbe
+0000            275   _PT2            BIT 0xbd
+0000            276   _PS0            BIT 0xbc
+0000            277   _PT1            BIT 0xbb
+0000            278   _PX1            BIT 0xba
+0000            279   _PT0            BIT 0xb9
+0000            280   _PX0            BIT 0xb8
+0000            281   _MASTER0        BIT 0xc7
+0000            282   _TXMODE0        BIT 0xc6
+0000            283   _STA0           BIT 0xc5
+0000            284   _STO0           BIT 0xc4
+0000            285   _ACKRQ0         BIT 0xc3
+0000            286   _ARBLOST0       BIT 0xc2
+0000            287   _ACK0           BIT 0xc1
+0000            288   _SI0            BIT 0xc0
+0000            289   _MASTER1        BIT 0xc7
+0000            290   _TXMODE1        BIT 0xc6
+0000            291   _STA1           BIT 0xc5
+0000            292   _STO1           BIT 0xc4
+0000            293   _ACKRQ1         BIT 0xc3
+0000            294   _ARBLOST1       BIT 0xc2
+0000            295   _ACK1           BIT 0xc1
+0000            296   _SI1            BIT 0xc0
+0000            297   _TF2            BIT 0xcf
+0000            298   _TF2H           BIT 0xcf
+0000            299   _TF2L           BIT 0xce
+0000            300   _TF2LEN         BIT 0xcd
+0000            301   _TF2CEN         BIT 0xcc
+0000            302   _T2SPLIT        BIT 0xcb
+0000            303   _TR2            BIT 0xca
+0000            304   _T2CSS          BIT 0xc9
+0000            305   _T2XCLK         BIT 0xc8
+0000            306   _TF5H           BIT 0xcf
+0000            307   _TF5L           BIT 0xce
+0000            308   _TF5LEN         BIT 0xcd
+0000            309   _TMR5CN_4       BIT 0xcc
+0000            310   _T5SPLIT        BIT 0xcb
+0000            311   _TR5            BIT 0xca
+0000            312   _TMR5CN_1       BIT 0xc9
+0000            313   _T5XCLK         BIT 0xc8
+0000            314   _CY             BIT 0xd7
+0000            315   _AC             BIT 0xd6
+0000            316   _F0             BIT 0xd5
+0000            317   _RS1            BIT 0xd4
+0000            318   _RS0            BIT 0xd3
+0000            319   _OV             BIT 0xd2
+0000            320   _F1             BIT 0xd1
+0000            321   _PARITY         BIT 0xd0
+0000            322   _CF             BIT 0xdf
+0000            323   _CR             BIT 0xde
+0000            324   _PCA0CN_5       BIT 0xde
+0000            325   _CCF4           BIT 0xdc
+0000            326   _CCF3           BIT 0xdb
+0000            327   _CCF2           BIT 0xda
+0000            328   _CCF1           BIT 0xd9
+0000            329   _CCF0           BIT 0xd8
+0000            330   _ACC_7          BIT 0xe7
+0000            331   _ACC_6          BIT 0xe6
+0000            332   _ACC_5          BIT 0xe5
+0000            333   _ACC_4          BIT 0xe4
+0000            334   _ACC_3          BIT 0xe3
+0000            335   _ACC_2          BIT 0xe2
+0000            336   _ACC_1          BIT 0xe1
+0000            337   _ACC_0          BIT 0xe0
+0000            338   _AD0EN          BIT 0xef
+0000            339   _AD0TM          BIT 0xee
+0000            340   _AD0INT         BIT 0xed
+0000            341   _AD0BUSY        BIT 0xec
+0000            342   _AD0WINT        BIT 0xeb
+0000            343   _AD0CM2         BIT 0xea
+0000            344   _AD0CM1         BIT 0xe9
+0000            345   _AD0CM0         BIT 0xe8
+0000            346   _B_7            BIT 0xf7
+0000            347   _B_6            BIT 0xf6
+0000            348   _B_5            BIT 0xf5
+0000            349   _B_4            BIT 0xf4
+0000            350   _B_3            BIT 0xf3
+0000            351   _B_2            BIT 0xf2
+0000            352   _B_1            BIT 0xf1
+0000            353   _B_0            BIT 0xf0
+0000            354   _SPIF           BIT 0xff
+0000            355   _WCOL           BIT 0xfe
+0000            356   _MODF           BIT 0xfd
+0000            357   _RXOVRN         BIT 0xfc
+0000            358   _NSSMD1         BIT 0xfb
+0000            359   _NSSMD0         BIT 0xfa
+0000            360   _TXBMT          BIT 0xf9
+0000            361   _SPIEN          BIT 0xf8
+0000            362   ;--------------------------------------------------------
+0000            363   ; overlayable register banks
+0000            364   ;--------------------------------------------------------
+0000            365            rbank0 segment data overlay
+0000            366   ;--------------------------------------------------------
+0000            367   ; internal ram data
+0000            368   ;--------------------------------------------------------
+0000            369            rseg R_DSEG
+0000            370   _nunchuck_init_buf_1_78:
+0000            371            ds 6
+0006            372   _nunchuck_init_sloc0_1_0:
+0006            373            ds 2
+0008            374   _nunchuck_init_sloc1_1_0:
+0008            375            ds 2
+000A            376   _nunchuck_init_sloc2_1_0:
+000A            377            ds 2
+000C            378   _UART1_Init_sloc0_1_0:
+000C            379            ds 4
+0010            380   _main_rbuf_1_96:
+0010            381            ds 6
+0016            382   _main_joy_y_1_96:
+0016            383            ds 2
+0018            384   _main_off_x_1_96:
+0018            385            ds 2
+001A            386   _main_off_y_1_96:
+001A            387            ds 2
+001C            388   _main_acc_x_1_96:
+001C            389            ds 2
+001E            390   _main_acc_y_1_96:
+001E            391            ds 2
+0020            392   _main_acc_z_1_96:
+0020            393            ds 2
+0022            394   _main_sloc0_1_0:
+0022            395            ds 1
+0023            396   ;--------------------------------------------------------
+0023            397   ; overlayable items in internal ram 
+0023            398   ;--------------------------------------------------------
+0000            399            rseg    R_OSEG
+0000            400            rseg    R_OSEG
+0000            401            rseg    R_OSEG
+0000            402            rseg    R_OSEG
+0000            403   ;--------------------------------------------------------
+0000            404   ; indirectly addressable internal ram data
+0000            405   ;--------------------------------------------------------
+0000            406            rseg R_ISEG
+0000            407   ;--------------------------------------------------------
+0000            408   ; absolute internal ram data
+0000            409   ;--------------------------------------------------------
+0000            410            DSEG
+0000            411   ;--------------------------------------------------------
+0000            412   ; bit data
+0000            413   ;--------------------------------------------------------
+0000            414            rseg R_BSEG
+0000            415   _nunchuck_init_PARM_1:
+0000            416            DBIT    1
+0001            417   _main_but1_1_96:
+0001            418            DBIT    1
+0002            419   _main_but2_1_96:
+0002            420            DBIT    1
+0003            421   ;--------------------------------------------------------
+0003            422   ; paged external ram data
+0003            423   ;--------------------------------------------------------
+0000            424            rseg R_PSEG
+0000            425   ;--------------------------------------------------------
+0000            426   ; external ram data
+0000            427   ;--------------------------------------------------------
+0000            428            rseg R_XSEG
+0000            429   ;--------------------------------------------------------
+0000            430   ; absolute external ram data
+0000            431   ;--------------------------------------------------------
+0000            432            XSEG
+0000            433   ;--------------------------------------------------------
+0000            434   ; external initialized ram data
+0000            435   ;--------------------------------------------------------
+0000            436            rseg R_IXSEG
+0000            437            rseg R_HOME
+0000            438            rseg R_GSINIT
+0000            439            rseg R_CSEG
+0000            440   ;--------------------------------------------------------
+0000            441   ; Reset entry point and interrupt vectors
+0000            442   ;--------------------------------------------------------
+0000            443            CSEG at 0x0000
+0000 020100     444            ljmp    _crt0
+0003            445   ;--------------------------------------------------------
+0003            446   ; global & static initialisations
+0003            447   ;--------------------------------------------------------
+0000            448            rseg R_HOME
+0000            449            rseg R_GSINIT
+0000            450            rseg R_GSINIT
+0000            451   ;--------------------------------------------------------
+0000            452   ; data variables initialization
+0000            453   ;--------------------------------------------------------
+0000            454            rseg R_DINIT
+0000            455            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            456   ;--------------------------------------------------------
+0000            457   ; code
+0000            458   ;--------------------------------------------------------
+0000            459            rseg R_CSEG
+0000            460   ;------------------------------------------------------------
+0000            461   ;Allocation info for local variables in function '_c51_external_startup'
+0000            462   ;------------------------------------------------------------
+0000            463   ;------------------------------------------------------------
+0000            464   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:34: char _c51_external_startup (void)
+0000            465   ;        -----------------------------------------
+0000            466   ;         function _c51_external_startup
+0000            467   ;        -----------------------------------------
+0000            468   __c51_external_startup:
+0000            469            using   0
+0000            470   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:36: PCA0MD&=(~0x40) ;  // DISABLE WDT: clear Watchdog Enable bit
+0000 53D9BF     471            anl     _PCA0MD,#0xBF
+0003            472   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:37: VDM0CN=0x80;       // Enable VDD monitor
+0003 75FF80     473            mov     _VDM0CN,#0x80
+0006            474   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:38: RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
+0006 75EF06     475            mov     _RSTSRC,#0x06
+0009            476   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:46: CLKSEL|=0b_0000_0011; // SYSCLK derived from the Internal High-Frequency Oscillator / 1.
+0009 43A903     477            orl     _CLKSEL,#0x03
+000C            478   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:50: OSCICN |= 0x03; // Configure internal oscillator for its maximum frequency
+000C 43B203     479            orl     _OSCICN,#0x03
+000F            480   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:53: TH1 = 0x10000-((SYSCLK/BAUDRATE)/2L);
+000F 758D30     481            mov     _TH1,#0x30
+0012            482   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:54: CKCON &= ~0x0B;                  // T1M = 1; SCA1:0 = xx
+0012 538EF4     483            anl     _CKCON,#0xF4
+0015            484   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:55: CKCON |=  0x08;
+0015 438E08     485            orl     _CKCON,#0x08
+0018            486   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:69: TL1 = TH1;     // Init timer 1
+0018 858D8B     487            mov     _TL1,_TH1
+001B            488   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:70: TMOD &= 0x0f;  // Mask out timer 1 bits
+001B 53890F     489            anl     _TMOD,#0x0F
+001E            490   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:71: TMOD |= 0x20;  // TMOD: timer 1 in 8-bit autoreload                     
+001E 438920     491            orl     _TMOD,#0x20
+0021            492   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:72: TR1 = 1;       // Start timer1
+0021 D28E       493            setb    _TR1
+0023            494   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:73: SCON = 0x52;
+0023 759852     495            mov     _SCON,#0x52
+0026            496   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:76: P0MDOUT = 0x10;           // Enable Uart TX as push-pull output
+0026 75A410     497            mov     _P0MDOUT,#0x10
+0029            498   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:77: P2MDOUT |= 0b0000_0110;   // Make the LED (P2.2) a push-pull output.  P2.1 used for debuging.
+0029 43A606     499            orl     _P2MDOUT,#0x06
+002C            500   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:78: XBR0 = 0b0000_0101;       // Enable SMBus pins and UART pins P0.4(TX) and P0.5(RX)
+002C 75E105     501            mov     _XBR0,#0x05
+002F            502   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:79: XBR1 = 0x40;              // Enable crossbar and weak pull-ups
+002F 75E240     503            mov     _XBR1,#0x40
+0032            504   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:82: CKCON |= 0x04; // Timer0 clock source = SYSCLK
+0032 438E04     505            orl     _CKCON,#0x04
+0035            506   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:83: TMOD &= 0xf0;  // Mask out timer 1 bits
+0035 5389F0     507            anl     _TMOD,#0xF0
+0038            508   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:84: TMOD |= 0x02;  // Timer0 in 8-bit auto-reload mode
+0038 438902     509            orl     _TMOD,#0x02
+003B            510   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:86: TL0 = TH0 = 256-(SYSCLK/SMB_FREQUENCY/3);
+003B 758C60     511            mov     _TH0,#0x60
+003E 758A60     512            mov     _TL0,#0x60
+0041            513   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:87: TR0 = 1; // Enable timer 0
+0041 D28C       514            setb    _TR0
+0043            515   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:90: SMB0CF = INH | EXTHOLD | SMBTOE | SMBFTE ;
+0043 75C15C     516            mov     _SMB0CF,#0x5C
+0046            517   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:91: SMB0CF |= ENSMB;  // Enable SMBus
+0046 43C180     518            orl     _SMB0CF,#0x80
+0049            519   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:93: LED = LED_OFF;
+0049 D2A2       520            setb    _P2_2
+004B            521   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:95: return 0;
+004B 758200     522            mov     dpl,#0x00
+004E 22         523            ret
+004F            524   ;------------------------------------------------------------
+004F            525   ;Allocation info for local variables in function 'Timer4ms'
+004F            526   ;------------------------------------------------------------
+004F            527   ;ms                        Allocated to registers r2 
+004F            528   ;i                         Allocated to registers r4 
+004F            529   ;k                         Allocated to registers r3 
+004F            530   ;------------------------------------------------------------
+004F            531   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:99: void Timer4ms(unsigned char ms)
+004F            532   ;        -----------------------------------------
+004F            533   ;         function Timer4ms
+004F            534   ;        -----------------------------------------
+004F            535   _Timer4ms:
+004F AA82       536            mov     r2,dpl
+0051            537   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:104: k=SFRPAGE;
+0051 ABBF       538            mov     r3,_SFRPAGE
+0053            539   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:105: SFRPAGE=0xf;
+0053 75BF0F     540            mov     _SFRPAGE,#0x0F
+0056            541   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:107: CKCON1|=0b_0000_0001;
+0056 43E401     542            orl     _CKCON1,#0x01
+0059            543   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:109: TMR4RL = 65536-(SYSCLK/1000L); // Set Timer4 to overflow in 1 ms.
+0059 759280     544            mov     _TMR4RL,#0x80
+005C 759344     545            mov     (_TMR4RL >> 8),#0x44
+005F            546   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:110: TMR4 = TMR4RL;                 // Initialize Timer4 for first overflow
+005F 859294     547            mov     _TMR4,_TMR4RL
+0062 859395     548            mov     (_TMR4 >> 8),(_TMR4RL >> 8)
+0065            549   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:112: TMR4CN = 0x04;                 // Start Timer4 and clear overflow flag
+0065 759104     550            mov     _TMR4CN,#0x04
+0068            551   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:113: for (i = 0; i < ms; i++)       // Count <ms> overflows
+0068 7C00       552            mov     r4,#0x00
+006A            553   L003004?:
+006A C3         554            clr     c
+006B EC         555            mov     a,r4
+006C 9A         556            subb    a,r2
+006D 5001       557            jnc     L003007?
+006F            558   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:115: while (!(TMR4CN & 0x80));  // Wait for overflow
+006F            559   L003001?:
+006F E591       560            mov     a,_TMR4CN
+0071 30E760     561            jnb     acc.7,L003001?
+0074            562   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:116: TMR4CN &= ~(0x80);         // Clear overflow indicator
+0074 53917F     563            anl     _TMR4CN,#0x7F
+0077            564   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:113: for (i = 0; i < ms; i++)       // Count <ms> overflows
+0077 0C         565            inc     r4
+0078 8001       566            sjmp    L003004?
+007A            567   L003007?:
+007A            568   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:118: TMR4CN = 0 ;                   // Stop Timer4 and clear overflow flag
+007A 759100     569            mov     _TMR4CN,#0x00
+007D            570   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:119: SFRPAGE=k;  
+007D 8BBF       571            mov     _SFRPAGE,r3
+007F 22         572            ret
+0080            573   ;------------------------------------------------------------
+0080            574   ;Allocation info for local variables in function 'I2C_write'
+0080            575   ;------------------------------------------------------------
+0080            576   ;output_data               Allocated to registers 
+0080            577   ;------------------------------------------------------------
+0080            578   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:122: void I2C_write (unsigned char output_data)
+0080            579   ;        -----------------------------------------
+0080            580   ;         function I2C_write
+0080            581   ;        -----------------------------------------
+0080            582   _I2C_write:
+0080 8582C2     583            mov     _SMB0DAT,dpl
+0083            584   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:125: SI0 = 0;
+0083 C2C0       585            clr     _SI0
+0085            586   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:126: while (!SI0); // Wait until done with send
+0085            587   L004001?:
+0085 30C0E0     588            jnb     _SI0,L004001?
+0088 22         589            ret
+0089            590   ;------------------------------------------------------------
+0089            591   ;Allocation info for local variables in function 'I2C_read'
+0089            592   ;------------------------------------------------------------
+0089            593   ;input_data                Allocated to registers 
+0089            594   ;------------------------------------------------------------
+0089            595   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:129: unsigned char I2C_read (void)
+0089            596   ;        -----------------------------------------
+0089            597   ;         function I2C_read
+0089            598   ;        -----------------------------------------
+0089            599   _I2C_read:
+0089            600   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:133: SI0 = 0;
+0089 C2C0       601            clr     _SI0
+008B            602   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:134: while (!SI0); // Wait until we have data to read
+008B            603   L005001?:
+008B 30C020     604            jnb     _SI0,L005001?
+008E            605   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:135: input_data = SMB0DAT; // Read the data
+008E 85C282     606            mov     dpl,_SMB0DAT
+0091            607   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:137: return input_data;
+0091 22         608            ret
+0092            609   ;------------------------------------------------------------
+0092            610   ;Allocation info for local variables in function 'I2C_start'
+0092            611   ;------------------------------------------------------------
+0092            612   ;------------------------------------------------------------
+0092            613   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:140: void I2C_start (void)
+0092            614   ;        -----------------------------------------
+0092            615   ;         function I2C_start
+0092            616   ;        -----------------------------------------
+0092            617   _I2C_start:
+0092            618   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:142: ACK0 = 1;
+0092 D2C1       619            setb    _ACK0
+0094            620   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:143: STA0 = 1;     // Send I2C start
+0094 D2C5       621            setb    _STA0
+0096            622   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:144: STO0 = 0;
+0096 C2C4       623            clr     _STO0
+0098            624   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:145: SI0 = 0;
+0098 C2C0       625            clr     _SI0
+009A            626   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:146: while (!SI0); // Wait until start sent
+009A            627   L006001?:
+009A 30C060     628            jnb     _SI0,L006001?
+009D            629   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:147: STA0 = 0;     // Reset I2C start
+009D C2C5       630            clr     _STA0
+009F 22         631            ret
+00A0            632   ;------------------------------------------------------------
+00A0            633   ;Allocation info for local variables in function 'I2C_stop'
+00A0            634   ;------------------------------------------------------------
+00A0            635   ;------------------------------------------------------------
+00A0            636   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:150: void I2C_stop(void)
+00A0            637   ;        -----------------------------------------
+00A0            638   ;         function I2C_stop
+00A0            639   ;        -----------------------------------------
+00A0            640   _I2C_stop:
+00A0            641   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:152: STO0 = 1;           // Perform I2C stop
+00A0 D2C4       642            setb    _STO0
+00A2            643   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:153: SI0 = 0;    // Clear SI
+00A2 C2C0       644            clr     _SI0
+00A4 22         645            ret
+00A5            646   ;------------------------------------------------------------
+00A5            647   ;Allocation info for local variables in function 'nunchuck_init'
+00A5            648   ;------------------------------------------------------------
+00A5            649   ;i                         Allocated to registers r2 
+00A5            650   ;buf                       Allocated with name '_nunchuck_init_buf_1_78'
+00A5            651   ;sloc0                     Allocated with name '_nunchuck_init_sloc0_1_0'
+00A5            652   ;sloc1                     Allocated with name '_nunchuck_init_sloc1_1_0'
+00A5            653   ;sloc2                     Allocated with name '_nunchuck_init_sloc2_1_0'
+00A5            654   ;------------------------------------------------------------
+00A5            655   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:157: void nunchuck_init(bit print_extension_type)
+00A5            656   ;        -----------------------------------------
+00A5            657   ;         function nunchuck_init
+00A5            658   ;        -----------------------------------------
+00A5            659   _nunchuck_init:
+00A5            660   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:169: I2C_start();
+00A5 120100     661            lcall   _I2C_start
+00A8            662   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:170: I2C_write(0xA4);
+00A8 7582A4     663            mov     dpl,#0xA4
+00AB 120100     664            lcall   _I2C_write
+00AE            665   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:171: I2C_write(0xF0);
+00AE 7582F0     666            mov     dpl,#0xF0
+00B1 120100     667            lcall   _I2C_write
+00B4            668   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:172: I2C_write(0x55);
+00B4 758255     669            mov     dpl,#0x55
+00B7 120100     670            lcall   _I2C_write
+00BA            671   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:173: I2C_stop();
+00BA 120100     672            lcall   _I2C_stop
+00BD            673   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:174: Timer4ms(1);
+00BD 758201     674            mov     dpl,#0x01
+00C0 120100     675            lcall   _Timer4ms
+00C3            676   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:176: I2C_start();
+00C3 120100     677            lcall   _I2C_start
+00C6            678   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:177: I2C_write(0xA4);
+00C6 7582A4     679            mov     dpl,#0xA4
+00C9 120100     680            lcall   _I2C_write
+00CC            681   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:178: I2C_write(0xFB);
+00CC 7582FB     682            mov     dpl,#0xFB
+00CF 120100     683            lcall   _I2C_write
+00D2            684   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:179: I2C_write(0x00);
+00D2 758200     685            mov     dpl,#0x00
+00D5 120100     686            lcall   _I2C_write
+00D8            687   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:180: I2C_stop();
+00D8 120100     688            lcall   _I2C_stop
+00DB            689   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:181: Timer4ms(1);
+00DB 758201     690            mov     dpl,#0x01
+00DE 120100     691            lcall   _Timer4ms
+00E1            692   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:185: I2C_start();
+00E1 120100     693            lcall   _I2C_start
+00E4            694   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:186: I2C_write(0xA4);
+00E4 7582A4     695            mov     dpl,#0xA4
+00E7 120100     696            lcall   _I2C_write
+00EA            697   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:187: I2C_write(0xFA); // extension type register
+00EA 7582FA     698            mov     dpl,#0xFA
+00ED 120100     699            lcall   _I2C_write
+00F0            700   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:188: I2C_stop();
+00F0 120100     701            lcall   _I2C_stop
+00F3            702   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:189: Timer4ms(3); // 3 ms required to complete acquisition
+00F3 758203     703            mov     dpl,#0x03
+00F6 120100     704            lcall   _Timer4ms
+00F9            705   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:191: I2C_start();
+00F9 120100     706            lcall   _I2C_start
+00FC            707   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:192: I2C_write(0xA5);
+00FC 7582A5     708            mov     dpl,#0xA5
+00FF 120100     709            lcall   _I2C_write
+0102            710   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:195: for(i=0; i<6; i++)
+0102 7A00       711            mov     r2,#0x00
+0104            712   L008003?:
+0104 BA06E0     713            cjne    r2,#0x06,L008013?
+0107            714   L008013?:
+0107 5001       715            jnc     L008006?
+0109            716   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:197: buf[i]=I2C_read();
+0109 EA         717            mov     a,r2
+010A 2400       718            add     a,#_nunchuck_init_buf_1_78
+010C F8         719            mov     r0,a
+010D C002       720            push    ar2
+010F C000       721            push    ar0
+0111 120100     722            lcall   _I2C_read
+0114 E582       723            mov     a,dpl
+0116 D000       724            pop     ar0
+0118 D002       725            pop     ar2
+011A F6         726            mov     @r0,a
+011B            727   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:195: for(i=0; i<6; i++)
+011B 0A         728            inc     r2
+011C 8001       729            sjmp    L008003?
+011E            730   L008006?:
+011E            731   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:199: ACK0=0;
+011E C2C1       732            clr     _ACK0
+0120            733   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:200: I2C_stop();
+0120 120100     734            lcall   _I2C_stop
+0123            735   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:201: Timer4ms(3);
+0123 758203     736            mov     dpl,#0x03
+0126 120100     737            lcall   _Timer4ms
+0129            738   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:203: if(print_extension_type)
+0129 303060     739            jnb     _nunchuck_init_PARM_1,L008002?
+012C            740   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:206: buf[0],  buf[1], buf[2], buf[3], buf[4], buf[5]);
+012C AA05       741            mov     r2,(_nunchuck_init_buf_1_78 + 0x0005)
+012E 7B00       742            mov     r3,#0x00
+0130 AC04       743            mov     r4,(_nunchuck_init_buf_1_78 + 0x0004)
+0132 7D00       744            mov     r5,#0x00
+0134 850350     745            mov     _nunchuck_init_sloc0_1_0,(_nunchuck_init_buf_1_78 + 0x0003)
+0137 755100     746            mov     (_nunchuck_init_sloc0_1_0 + 1),#0x00
+013A 8502A0     747            mov     _nunchuck_init_sloc1_1_0,(_nunchuck_init_buf_1_78 + 0x0002)
+013D 75A100     748            mov     (_nunchuck_init_sloc1_1_0 + 1),#0x00
+0140 8501F0     749            mov     _nunchuck_init_sloc2_1_0,(_nunchuck_init_buf_1_78 + 0x0001)
+0143 75F100     750            mov     (_nunchuck_init_sloc2_1_0 + 1),#0x00
+0146 AE00       751            mov     r6,_nunchuck_init_buf_1_78
+0148 7F00       752            mov     r7,#0x00
+014A            753   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:205: printf("Extension type: %02x  %02x  %02x  %02x  %02x  %02x\n", 
+014A C002       754            push    ar2
+014C C003       755            push    ar3
+014E C004       756            push    ar4
+0150 C005       757            push    ar5
+0152 C050       758            push    _nunchuck_init_sloc0_1_0
+0154 C051       759            push    (_nunchuck_init_sloc0_1_0 + 1)
+0156 C0A0       760            push    _nunchuck_init_sloc1_1_0
+0158 C0A1       761            push    (_nunchuck_init_sloc1_1_0 + 1)
+015A C0F0       762            push    _nunchuck_init_sloc2_1_0
+015C C0F1       763            push    (_nunchuck_init_sloc2_1_0 + 1)
+015E C006       764            push    ar6
+0160 C007       765            push    ar7
+0162 74A0       766            mov     a,#__str_0
+0164 C0E0       767            push    acc
+0166 749A       768            mov     a,#(__str_0 >> 8)
+0168 C0E0       769            push    acc
+016A 7480       770            mov     a,#0x80
+016C C0E0       771            push    acc
+016E 120100     772            lcall   _printf
+0171 E581       773            mov     a,sp
+0173 24F1       774            add     a,#0xf1
+0175 F581       775            mov     sp,a
+0177            776   L008002?:
+0177            777   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:211: I2C_start();
+0177 120100     778            lcall   _I2C_start
+017A            779   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:212: I2C_write(0xA4);
+017A 7582A4     780            mov     dpl,#0xA4
+017D 120100     781            lcall   _I2C_write
+0180            782   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:213: I2C_write(0xF0);
+0180 7582F0     783            mov     dpl,#0xF0
+0183 120100     784            lcall   _I2C_write
+0186            785   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:214: I2C_write(0xAA);
+0186 7582AA     786            mov     dpl,#0xAA
+0189 120100     787            lcall   _I2C_write
+018C            788   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:215: I2C_stop();
+018C 120100     789            lcall   _I2C_stop
+018F            790   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:216: Timer4ms(1);
+018F 758201     791            mov     dpl,#0x01
+0192 120100     792            lcall   _Timer4ms
+0195            793   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:218: I2C_start();
+0195 120100     794            lcall   _I2C_start
+0198            795   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:219: I2C_write(0xA4);
+0198 7582A4     796            mov     dpl,#0xA4
+019B 120100     797            lcall   _I2C_write
+019E            798   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:220: I2C_write(0x40);
+019E 758240     799            mov     dpl,#0x40
+01A1 120100     800            lcall   _I2C_write
+01A4            801   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:221: I2C_write(0x00);
+01A4 758200     802            mov     dpl,#0x00
+01A7 120100     803            lcall   _I2C_write
+01AA            804   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:222: I2C_write(0x00);
+01AA 758200     805            mov     dpl,#0x00
+01AD 120100     806            lcall   _I2C_write
+01B0            807   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:223: I2C_write(0x00);
+01B0 758200     808            mov     dpl,#0x00
+01B3 120100     809            lcall   _I2C_write
+01B6            810   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:224: I2C_write(0x00);
+01B6 758200     811            mov     dpl,#0x00
+01B9 120100     812            lcall   _I2C_write
+01BC            813   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:225: I2C_write(0x00);
+01BC 758200     814            mov     dpl,#0x00
+01BF 120100     815            lcall   _I2C_write
+01C2            816   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:226: I2C_write(0x00);
+01C2 758200     817            mov     dpl,#0x00
+01C5 120100     818            lcall   _I2C_write
+01C8            819   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:227: I2C_stop();
+01C8 120100     820            lcall   _I2C_stop
+01CB            821   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:228: Timer4ms(1);
+01CB 758201     822            mov     dpl,#0x01
+01CE 120100     823            lcall   _Timer4ms
+01D1            824   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:230: I2C_start();
+01D1 120100     825            lcall   _I2C_start
+01D4            826   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:231: I2C_write(0xA4);
+01D4 7582A4     827            mov     dpl,#0xA4
+01D7 120100     828            lcall   _I2C_write
+01DA            829   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:232: I2C_write(0x40);
+01DA 758240     830            mov     dpl,#0x40
+01DD 120100     831            lcall   _I2C_write
+01E0            832   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:233: I2C_write(0x00);
+01E0 758200     833            mov     dpl,#0x00
+01E3 120100     834            lcall   _I2C_write
+01E6            835   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:234: I2C_write(0x00);
+01E6 758200     836            mov     dpl,#0x00
+01E9 120100     837            lcall   _I2C_write
+01EC            838   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:235: I2C_write(0x00);
+01EC 758200     839            mov     dpl,#0x00
+01EF 120100     840            lcall   _I2C_write
+01F2            841   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:236: I2C_write(0x00);
+01F2 758200     842            mov     dpl,#0x00
+01F5 120100     843            lcall   _I2C_write
+01F8            844   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:237: I2C_write(0x00);
+01F8 758200     845            mov     dpl,#0x00
+01FB 120100     846            lcall   _I2C_write
+01FE            847   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:238: I2C_write(0x00);
+01FE 758200     848            mov     dpl,#0x00
+0201 120100     849            lcall   _I2C_write
+0204            850   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:239: I2C_stop();
+0204 120100     851            lcall   _I2C_stop
+0207            852   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:240: Timer4ms(1);
+0207 758201     853            mov     dpl,#0x01
+020A 120100     854            lcall   _Timer4ms
+020D            855   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:242: I2C_start();
+020D 120100     856            lcall   _I2C_start
+0210            857   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:243: I2C_write(0xA4);
+0210 7582A4     858            mov     dpl,#0xA4
+0213 120100     859            lcall   _I2C_write
+0216            860   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:244: I2C_write(0x40);
+0216 758240     861            mov     dpl,#0x40
+0219 120100     862            lcall   _I2C_write
+021C            863   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:245: I2C_write(0x00);
+021C 758200     864            mov     dpl,#0x00
+021F 120100     865            lcall   _I2C_write
+0222            866   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:246: I2C_write(0x00);
+0222 758200     867            mov     dpl,#0x00
+0225 120100     868            lcall   _I2C_write
+0228            869   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:247: I2C_write(0x00);
+0228 758200     870            mov     dpl,#0x00
+022B 120100     871            lcall   _I2C_write
+022E            872   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:248: I2C_write(0x00);
+022E 758200     873            mov     dpl,#0x00
+0231 120100     874            lcall   _I2C_write
+0234            875   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:249: I2C_stop();
+0234 120100     876            lcall   _I2C_stop
+0237            877   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:250: Timer4ms(1);
+0237 758201     878            mov     dpl,#0x01
+023A 020100     879            ljmp    _Timer4ms
+023D            880   ;------------------------------------------------------------
+023D            881   ;Allocation info for local variables in function 'nunchuck_getdata'
+023D            882   ;------------------------------------------------------------
+023D            883   ;s                         Allocated to registers r2 r3 r4 
+023D            884   ;i                         Allocated to registers r5 
+023D            885   ;------------------------------------------------------------
+023D            886   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:254: void nunchuck_getdata(unsigned char * s)
+023D            887   ;        -----------------------------------------
+023D            888   ;         function nunchuck_getdata
+023D            889   ;        -----------------------------------------
+023D            890   _nunchuck_getdata:
+023D AA82       891            mov     r2,dpl
+023F AB83       892            mov     r3,dph
+0241 ACF0       893            mov     r4,b
+0243            894   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:259: I2C_start();
+0243 C002       895            push    ar2
+0245 C003       896            push    ar3
+0247 C004       897            push    ar4
+0249 120100     898            lcall   _I2C_start
+024C            899   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:260: I2C_write(0xA4);
+024C 7582A4     900            mov     dpl,#0xA4
+024F 120100     901            lcall   _I2C_write
+0252            902   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:261: I2C_write(0x00);
+0252 758200     903            mov     dpl,#0x00
+0255 120100     904            lcall   _I2C_write
+0258            905   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:262: I2C_stop();
+0258 120100     906            lcall   _I2C_stop
+025B            907   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:263: Timer4ms(3);        // 3 ms required to complete acquisition
+025B 758203     908            mov     dpl,#0x03
+025E 120100     909            lcall   _Timer4ms
+0261            910   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:266: I2C_start();
+0261 120100     911            lcall   _I2C_start
+0264            912   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:267: I2C_write(0xA5);
+0264 7582A5     913            mov     dpl,#0xA5
+0267 120100     914            lcall   _I2C_write
+026A D004       915            pop     ar4
+026C D003       916            pop     ar3
+026E D002       917            pop     ar2
+0270            918   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:270: for(i=0; i<6; i++)
+0270 7D00       919            mov     r5,#0x00
+0272            920   L009001?:
+0272 BD0620     921            cjne    r5,#0x06,L009010?
+0275            922   L009010?:
+0275 5001       923            jnc     L009004?
+0277            924   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:272: s[i]=(I2C_read()^0x17)+0x17; // Read and decrypt
+0277 ED         925            mov     a,r5
+0278 2A         926            add     a,r2
+0279 FE         927            mov     r6,a
+027A E4         928            clr     a
+027B 3B         929            addc    a,r3
+027C FF         930            mov     r7,a
+027D 8C00       931            mov     ar0,r4
+027F C002       932            push    ar2
+0281 C003       933            push    ar3
+0283 C004       934            push    ar4
+0285 C005       935            push    ar5
+0287 C006       936            push    ar6
+0289 C007       937            push    ar7
+028B C000       938            push    ar0
+028D 120100     939            lcall   _I2C_read
+0290 E582       940            mov     a,dpl
+0292 D000       941            pop     ar0
+0294 D007       942            pop     ar7
+0296 D006       943            pop     ar6
+0298 D005       944            pop     ar5
+029A D004       945            pop     ar4
+029C D003       946            pop     ar3
+029E D002       947            pop     ar2
+02A0 6417       948            xrl     a,#0x17
+02A2 2417       949            add     a,#0x17
+02A4 F9         950            mov     r1,a
+02A5 8E82       951            mov     dpl,r6
+02A7 8F83       952            mov     dph,r7
+02A9 88F0       953            mov     b,r0
+02AB 120100     954            lcall   __gptrput
+02AE            955   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:270: for(i=0; i<6; i++)
+02AE 0D         956            inc     r5
+02AF 8001       957            sjmp    L009001?
+02B1            958   L009004?:
+02B1            959   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:274: ACK0=0;
+02B1 C2C1       960            clr     _ACK0
+02B3            961   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:275: I2C_stop();
+02B3 020100     962            ljmp    _I2C_stop
+02B6            963   ;------------------------------------------------------------
+02B6            964   ;Allocation info for local variables in function 'UART1_Init'
+02B6            965   ;------------------------------------------------------------
+02B6            966   ;baudrate                  Allocated to registers r2 r3 r4 r5 
+02B6            967   ;sloc0                     Allocated with name '_UART1_Init_sloc0_1_0'
+02B6            968   ;------------------------------------------------------------
+02B6            969   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:278: void UART1_Init (unsigned long baudrate)
+02B6            970   ;        -----------------------------------------
+02B6            971   ;         function UART1_Init
+02B6            972   ;        -----------------------------------------
+02B6            973   _UART1_Init:
+02B6 AA82       974            mov     r2,dpl
+02B8 AB83       975            mov     r3,dph
+02BA ACF0       976            mov     r4,b
+02BC FD         977            mov     r5,a
+02BD            978   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:280: SMOD1 = 0x0C; // no parity, 8 data bits, 1 stop bit
+02BD 75E50C     979            mov     _SMOD1,#0x0C
+02C0            980   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:281: SCON1 = 0x20;
+02C0 75D220     981            mov     _SCON1,#0x20
+02C3            982   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:282: if (((SYSCLK/baudrate)/2L)/0xFFFFL < 1){
+02C3 8A00       983            mov     __divulong_PARM_2,r2
+02C5 8B01       984            mov     (__divulong_PARM_2 + 1),r3
+02C7 8C02       985            mov     (__divulong_PARM_2 + 2),r4
+02C9 8D03       986            mov     (__divulong_PARM_2 + 3),r5
+02CB 906C00     987            mov     dptr,#0x6C00
+02CE 75F0DC     988            mov     b,#0xDC
+02D1 7402       989            mov     a,#0x02
+02D3 120100     990            lcall   __divulong
+02D6 AA82       991            mov     r2,dpl
+02D8 AB83       992            mov     r3,dph
+02DA ACF0       993            mov     r4,b
+02DC C3         994            clr     c
+02DD 13         995            rrc     a
+02DE F543       996            mov     (_UART1_Init_sloc0_1_0 + 3),a
+02E0 EC         997            mov     a,r4
+02E1 13         998            rrc     a
+02E2 F542       999            mov     (_UART1_Init_sloc0_1_0 + 2),a
+02E4 EB        1000            mov     a,r3
+02E5 13        1001            rrc     a
+02E6 F541      1002            mov     (_UART1_Init_sloc0_1_0 + 1),a
+02E8 EA        1003            mov     a,r2
+02E9 13        1004            rrc     a
+02EA F540      1005            mov     _UART1_Init_sloc0_1_0,a
+02EC 7500FF    1006            mov     __divulong_PARM_2,#0xFF
+02EF 7501FF    1007            mov     (__divulong_PARM_2 + 1),#0xFF
+02F2 750200    1008            mov     (__divulong_PARM_2 + 2),#0x00
+02F5 750300    1009            mov     (__divulong_PARM_2 + 3),#0x00
+02F8 854082    1010            mov     dpl,_UART1_Init_sloc0_1_0
+02FB 854183    1011            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+02FE 8542F0    1012            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+0301 E543      1013            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+0303 120100    1014            lcall   __divulong
+0306 AE82      1015            mov     r6,dpl
+0308 AF83      1016            mov     r7,dph
+030A A8F0      1017            mov     r0,b
+030C F9        1018            mov     r1,a
+030D C3        1019            clr     c
+030E EE        1020            mov     a,r6
+030F 9401      1021            subb    a,#0x01
+0311 EF        1022            mov     a,r7
+0312 9400      1023            subb    a,#0x00
+0314 E8        1024            mov     a,r0
+0315 9400      1025            subb    a,#0x00
+0317 E9        1026            mov     a,r1
+0318 9400      1027            subb    a,#0x00
+031A 5001      1028            jnc     L010008?
+031C           1029   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:283: SBRL1 = 0x10000L-((SYSCLK/baudrate)/2L);
+031C E4        1030            clr     a
+031D C3        1031            clr     c
+031E 9540      1032            subb    a,_UART1_Init_sloc0_1_0
+0320 FA        1033            mov     r2,a
+0321 E4        1034            clr     a
+0322 9541      1035            subb    a,(_UART1_Init_sloc0_1_0 + 1)
+0324 FB        1036            mov     r3,a
+0325 7401      1037            mov     a,#0x01
+0327 9542      1038            subb    a,(_UART1_Init_sloc0_1_0 + 2)
+0329 FC        1039            mov     r4,a
+032A E4        1040            clr     a
+032B 9543      1041            subb    a,(_UART1_Init_sloc0_1_0 + 3)
+032D FD        1042            mov     r5,a
+032E 8AB4      1043            mov     _SBRL1,r2
+0330 8BB5      1044            mov     (_SBRL1 >> 8),r3
+0332           1045   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:284: SBCON1 |= 0x03; // set prescaler to 1
+0332 43AC03    1046            orl     _SBCON1,#0x03
+0335 020100    1047            ljmp    L010009?
+0338           1048   L010008?:
+0338           1049   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:286: else if (((SYSCLK/baudrate)/2L)/0xFFFFL < 4){
+0338 C3        1050            clr     c
+0339 EE        1051            mov     a,r6
+033A 9404      1052            subb    a,#0x04
+033C EF        1053            mov     a,r7
+033D 9400      1054            subb    a,#0x00
+033F E8        1055            mov     a,r0
+0340 9400      1056            subb    a,#0x00
+0342 E9        1057            mov     a,r1
+0343 9400      1058            subb    a,#0x00
+0345 5001      1059            jnc     L010005?
+0347           1060   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:287: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/4L);
+0347 E543      1061            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+0349 C3        1062            clr     c
+034A 13        1063            rrc     a
+034B FD        1064            mov     r5,a
+034C E542      1065            mov     a,(_UART1_Init_sloc0_1_0 + 2)
+034E 13        1066            rrc     a
+034F FC        1067            mov     r4,a
+0350 E541      1068            mov     a,(_UART1_Init_sloc0_1_0 + 1)
+0352 13        1069            rrc     a
+0353 FB        1070            mov     r3,a
+0354 E540      1071            mov     a,_UART1_Init_sloc0_1_0
+0356 13        1072            rrc     a
+0357 FA        1073            mov     r2,a
+0358 ED        1074            mov     a,r5
+0359 C3        1075            clr     c
+035A 13        1076            rrc     a
+035B FD        1077            mov     r5,a
+035C EC        1078            mov     a,r4
+035D 13        1079            rrc     a
+035E FC        1080            mov     r4,a
+035F EB        1081            mov     a,r3
+0360 13        1082            rrc     a
+0361 FB        1083            mov     r3,a
+0362 EA        1084            mov     a,r2
+0363 13        1085            rrc     a
+0364 FA        1086            mov     r2,a
+0365 E4        1087            clr     a
+0366 C3        1088            clr     c
+0367 9A        1089            subb    a,r2
+0368 FA        1090            mov     r2,a
+0369 E4        1091            clr     a
+036A 9B        1092            subb    a,r3
+036B FB        1093            mov     r3,a
+036C 7401      1094            mov     a,#0x01
+036E 9C        1095            subb    a,r4
+036F FC        1096            mov     r4,a
+0370 E4        1097            clr     a
+0371 9D        1098            subb    a,r5
+0372 FD        1099            mov     r5,a
+0373 8AB4      1100            mov     _SBRL1,r2
+0375 8BB5      1101            mov     (_SBRL1 >> 8),r3
+0377           1102   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:288: SBCON1 &= ~0x03;
+0377 53ACFC    1103            anl     _SBCON1,#0xFC
+037A           1104   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:289: SBCON1 |= 0x01; // set prescaler to 4
+037A 43AC01    1105            orl     _SBCON1,#0x01
+037D 020100    1106            ljmp    L010009?
+0380           1107   L010005?:
+0380           1108   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:291: else if (((SYSCLK/baudrate)/2L)/0xFFFFL < 12){
+0380 C3        1109            clr     c
+0381 EE        1110            mov     a,r6
+0382 940C      1111            subb    a,#0x0C
+0384 EF        1112            mov     a,r7
+0385 9400      1113            subb    a,#0x00
+0387 E8        1114            mov     a,r0
+0388 9400      1115            subb    a,#0x00
+038A E9        1116            mov     a,r1
+038B 9400      1117            subb    a,#0x00
+038D 5001      1118            jnc     L010002?
+038F           1119   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:292: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/12L);
+038F 75000C    1120            mov     __divulong_PARM_2,#0x0C
+0392 E4        1121            clr     a
+0393 F501      1122            mov     (__divulong_PARM_2 + 1),a
+0395 F502      1123            mov     (__divulong_PARM_2 + 2),a
+0397 F503      1124            mov     (__divulong_PARM_2 + 3),a
+0399 854082    1125            mov     dpl,_UART1_Init_sloc0_1_0
+039C 854183    1126            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+039F 8542F0    1127            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+03A2 E543      1128            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+03A4 120100    1129            lcall   __divulong
+03A7 AA82      1130            mov     r2,dpl
+03A9 AB83      1131            mov     r3,dph
+03AB ACF0      1132            mov     r4,b
+03AD FD        1133            mov     r5,a
+03AE E4        1134            clr     a
+03AF C3        1135            clr     c
+03B0 9A        1136            subb    a,r2
+03B1 FA        1137            mov     r2,a
+03B2 E4        1138            clr     a
+03B3 9B        1139            subb    a,r3
+03B4 FB        1140            mov     r3,a
+03B5 7401      1141            mov     a,#0x01
+03B7 9C        1142            subb    a,r4
+03B8 FC        1143            mov     r4,a
+03B9 E4        1144            clr     a
+03BA 9D        1145            subb    a,r5
+03BB FD        1146            mov     r5,a
+03BC 8AB4      1147            mov     _SBRL1,r2
+03BE 8BB5      1148            mov     (_SBRL1 >> 8),r3
+03C0           1149   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:293: SBCON1 &= ~0x03; // set prescaler to 12
+03C0 53ACFC    1150            anl     _SBCON1,#0xFC
+03C3 8001      1151            sjmp    L010009?
+03C5           1152   L010002?:
+03C5           1153   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:296: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/48L);
+03C5 750030    1154            mov     __divulong_PARM_2,#0x30
+03C8 E4        1155            clr     a
+03C9 F501      1156            mov     (__divulong_PARM_2 + 1),a
+03CB F502      1157            mov     (__divulong_PARM_2 + 2),a
+03CD F503      1158            mov     (__divulong_PARM_2 + 3),a
+03CF 854082    1159            mov     dpl,_UART1_Init_sloc0_1_0
+03D2 854183    1160            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+03D5 8542F0    1161            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+03D8 E543      1162            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+03DA 120100    1163            lcall   __divulong
+03DD AA82      1164            mov     r2,dpl
+03DF AB83      1165            mov     r3,dph
+03E1 ACF0      1166            mov     r4,b
+03E3 FD        1167            mov     r5,a
+03E4 E4        1168            clr     a
+03E5 C3        1169            clr     c
+03E6 9A        1170            subb    a,r2
+03E7 FA        1171            mov     r2,a
+03E8 E4        1172            clr     a
+03E9 9B        1173            subb    a,r3
+03EA FB        1174            mov     r3,a
+03EB 7401      1175            mov     a,#0x01
+03ED 9C        1176            subb    a,r4
+03EE FC        1177            mov     r4,a
+03EF E4        1178            clr     a
+03F0 9D        1179            subb    a,r5
+03F1 FD        1180            mov     r5,a
+03F2 8AB4      1181            mov     _SBRL1,r2
+03F4 8BB5      1182            mov     (_SBRL1 >> 8),r3
+03F6           1183   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:297: SBCON1 &= ~0x03;
+03F6 53ACFC    1184            anl     _SBCON1,#0xFC
+03F9           1185   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:298: SBCON1 |= 0x02; // set prescaler to ?
+03F9 43AC02    1186            orl     _SBCON1,#0x02
+03FC           1187   L010009?:
+03FC           1188   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:300: SCON1 |= 0x02; // indicate ready for TX
+03FC 43D202    1189            orl     _SCON1,#0x02
+03FF           1190   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:301: SBCON1 |= 0x40; // enable baud rate generator
+03FF 43AC40    1191            orl     _SBCON1,#0x40
+0402           1192   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:303: XBR2=0x01; // Enable UART1 on P0.0(TX1) and P0.1(RX1)
+0402 75E301    1193            mov     _XBR2,#0x01
+0405           1194   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:304: XBR1=0x40; // Enable crossbar and weak pull-ups
+0405 75E240    1195            mov     _XBR1,#0x40
+0408 22        1196            ret
+0409           1197   ;------------------------------------------------------------
+0409           1198   ;Allocation info for local variables in function 'putchar1'
+0409           1199   ;------------------------------------------------------------
+0409           1200   ;c                         Allocated to registers r2 
+0409           1201   ;------------------------------------------------------------
+0409           1202   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:308: void putchar1 (char c)
+0409           1203   ;        -----------------------------------------
+0409           1204   ;         function putchar1
+0409           1205   ;        -----------------------------------------
+0409           1206   _putchar1:
+0409 AA82      1207            mov     r2,dpl
+040B           1208   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:310: printf("1\r");
+040B C002      1209            push    ar2
+040D 7470      1210            mov     a,#__str_1
+040F C0E0      1211            push    acc
+0411 749E      1212            mov     a,#(__str_1 >> 8)
+0413 C0E0      1213            push    acc
+0415 7480      1214            mov     a,#0x80
+0417 C0E0      1215            push    acc
+0419 120100    1216            lcall   _printf
+041C 1581      1217            dec     sp
+041E 1581      1218            dec     sp
+0420 1581      1219            dec     sp
+0422 D002      1220            pop     ar2
+0424           1221   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:311: if (c == '\n' )
+0424 BA0AB0    1222            cjne    r2,#0x0A,L011005?
+0427           1223   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:313: while (!(SCON1 & 0x02));
+0427           1224   L011001?:
+0427 E5D2      1225            mov     a,_SCON1
+0429 30E1F0    1226            jnb     acc.1,L011001?
+042C           1227   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:314: SCON1 &= ~0x02;
+042C 53D2FD    1228            anl     _SCON1,#0xFD
+042F           1229   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:315: SBUF1 = '\r' ;
+042F 75D30D    1230            mov     _SBUF1,#0x0D
+0432           1231   L011005?:
+0432           1232   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:317: printf("2\r");
+0432 C002      1233            push    ar2
+0434 7430      1234            mov     a,#__str_2
+0436 C0E0      1235            push    acc
+0438 749F      1236            mov     a,#(__str_2 >> 8)
+043A C0E0      1237            push    acc
+043C 7480      1238            mov     a,#0x80
+043E C0E0      1239            push    acc
+0440 120100    1240            lcall   _printf
+0443 1581      1241            dec     sp
+0445 1581      1242            dec     sp
+0447 1581      1243            dec     sp
+0449 D002      1244            pop     ar2
+044B           1245   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:318: while (!(SCON1 & 0x02));
+044B           1246   L011006?:
+044B E5D2      1247            mov     a,_SCON1
+044D 30E170    1248            jnb     acc.1,L011006?
+0450           1249   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:319: SCON1 &= ~0x02;
+0450 53D2FD    1250            anl     _SCON1,#0xFD
+0453           1251   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:320: SBUF1 = c;
+0453 8AD3      1252            mov     _SBUF1,r2
+0455           1253   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:321: printf("3\r");
+0455 74B0      1254            mov     a,#__str_3
+0457 C0E0      1255            push    acc
+0459 749F      1256            mov     a,#(__str_3 >> 8)
+045B C0E0      1257            push    acc
+045D 7480      1258            mov     a,#0x80
+045F C0E0      1259            push    acc
+0461 120100    1260            lcall   _printf
+0464 1581      1261            dec     sp
+0466 1581      1262            dec     sp
+0468 1581      1263            dec     sp
+046A 22        1264            ret
+046B           1265   ;------------------------------------------------------------
+046B           1266   ;Allocation info for local variables in function 'getchar1'
+046B           1267   ;------------------------------------------------------------
+046B           1268   ;c                         Allocated to registers 
+046B           1269   ;------------------------------------------------------------
+046B           1270   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:324: char getchar1 (void)
+046B           1271   ;        -----------------------------------------
+046B           1272   ;         function getchar1
+046B           1273   ;        -----------------------------------------
+046B           1274   _getchar1:
+046B           1275   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:327: while (!(SCON1 & 0x01));
+046B           1276   L012001?:
+046B E5D2      1277            mov     a,_SCON1
+046D 30E0F0    1278            jnb     acc.0,L012001?
+0470           1279   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:328: SCON1 &= ~0x01;
+0470 53D2FE    1280            anl     _SCON1,#0xFE
+0473           1281   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:329: c = SBUF1;
+0473 85D382    1282            mov     dpl,_SBUF1
+0476           1283   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:330: return (c);
+0476 22        1284            ret
+0477           1285   ;------------------------------------------------------------
+0477           1286   ;Allocation info for local variables in function 'main'
+0477           1287   ;------------------------------------------------------------
+0477           1288   ;rbuf                      Allocated with name '_main_rbuf_1_96'
+0477           1289   ;joy_x                     Allocated to registers r6 r7 
+0477           1290   ;joy_y                     Allocated with name '_main_joy_y_1_96'
+0477           1291   ;off_x                     Allocated with name '_main_off_x_1_96'
+0477           1292   ;off_y                     Allocated with name '_main_off_y_1_96'
+0477           1293   ;acc_x                     Allocated with name '_main_acc_x_1_96'
+0477           1294   ;acc_y                     Allocated with name '_main_acc_y_1_96'
+0477           1295   ;acc_z                     Allocated with name '_main_acc_z_1_96'
+0477           1296   ;direction                 Allocated to registers r2 
+0477           1297   ;sloc0                     Allocated with name '_main_sloc0_1_0'
+0477           1298   ;------------------------------------------------------------
+0477           1299   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:333: void main (void)
+0477           1300   ;        -----------------------------------------
+0477           1301   ;         function main
+0477           1302   ;        -----------------------------------------
+0477           1303   _main:
+0477           1304   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:340: UART1_Init(BAUDRATE);
+0477 90C200    1305            mov     dptr,#0xC200
+047A 75F001    1306            mov     b,#0x01
+047D E4        1307            clr     a
+047E 120100    1308            lcall   _UART1_Init
+0481           1309   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:342: Timer4ms(200);
+0481 7582C8    1310            mov     dpl,#0xC8
+0484 120100    1311            lcall   _Timer4ms
+0487           1312   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:343: nunchuck_init(1);
+0487 D230      1313            setb    _nunchuck_init_PARM_1
+0489 120100    1314            lcall   _nunchuck_init
+048C           1315   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:344: Timer4ms(100);
+048C 758264    1316            mov     dpl,#0x64
+048F 120100    1317            lcall   _Timer4ms
+0492           1318   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:346: nunchuck_getdata(rbuf);
+0492 909480    1319            mov     dptr,#_main_rbuf_1_96
+0495 75F040    1320            mov     b,#0x40
+0498 120100    1321            lcall   _nunchuck_getdata
+049B           1322   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:348: off_x=(int)rbuf[0]-128;
+049B AA80      1323            mov     r2,_main_rbuf_1_96
+049D 7B00      1324            mov     r3,#0x00
+049F EA        1325            mov     a,r2
+04A0 2480      1326            add     a,#0x80
+04A2 F520      1327            mov     _main_off_x_1_96,a
+04A4 EB        1328            mov     a,r3
+04A5 34FF      1329            addc    a,#0xff
+04A7 F521      1330            mov     (_main_off_x_1_96 + 1),a
+04A9           1331   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:349: off_y=(int)rbuf[1]-128;
+04A9 AC81      1332            mov     r4,(_main_rbuf_1_96 + 0x0001)
+04AB 7D00      1333            mov     r5,#0x00
+04AD EC        1334            mov     a,r4
+04AE 2480      1335            add     a,#0x80
+04B0 F570      1336            mov     _main_off_y_1_96,a
+04B2 ED        1337            mov     a,r5
+04B3 34FF      1338            addc    a,#0xff
+04B5 F571      1339            mov     (_main_off_y_1_96 + 1),a
+04B7           1340   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:350: printf("Offset_X:%4d Offset_Y:%4d\n\n", off_x, off_y);
+04B7 C070      1341            push    _main_off_y_1_96
+04B9 C071      1342            push    (_main_off_y_1_96 + 1)
+04BB C020      1343            push    _main_off_x_1_96
+04BD C021      1344            push    (_main_off_x_1_96 + 1)
+04BF 7430      1345            mov     a,#__str_4
+04C1 C0E0      1346            push    acc
+04C3 74A0      1347            mov     a,#(__str_4 >> 8)
+04C5 C0E0      1348            push    acc
+04C7 7480      1349            mov     a,#0x80
+04C9 C0E0      1350            push    acc
+04CB 120100    1351            lcall   _printf
+04CE E581      1352            mov     a,sp
+04D0 24F9      1353            add     a,#0xf9
+04D2 F581      1354            mov     sp,a
+04D4           1355   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:352: while(1)
+04D4           1356   L013026?:
+04D4           1357   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:354: nunchuck_getdata(rbuf);
+04D4 909480    1358            mov     dptr,#_main_rbuf_1_96
+04D7 75F040    1359            mov     b,#0x40
+04DA 120100    1360            lcall   _nunchuck_getdata
+04DD           1361   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:356: joy_x=(int)rbuf[0]-128-off_x;
+04DD AE80      1362            mov     r6,_main_rbuf_1_96
+04DF 7F00      1363            mov     r7,#0x00
+04E1 EE        1364            mov     a,r6
+04E2 2480      1365            add     a,#0x80
+04E4 FE        1366            mov     r6,a
+04E5 EF        1367            mov     a,r7
+04E6 34FF      1368            addc    a,#0xff
+04E8 FF        1369            mov     r7,a
+04E9 EE        1370            mov     a,r6
+04EA C3        1371            clr     c
+04EB 9520      1372            subb    a,_main_off_x_1_96
+04ED FE        1373            mov     r6,a
+04EE EF        1374            mov     a,r7
+04EF 9521      1375            subb    a,(_main_off_x_1_96 + 1)
+04F1 FF        1376            mov     r7,a
+04F2           1377   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:357: joy_y=(int)rbuf[1]-128-off_y;
+04F2 AC81      1378            mov     r4,(_main_rbuf_1_96 + 0x0001)
+04F4 7D00      1379            mov     r5,#0x00
+04F6 EC        1380            mov     a,r4
+04F7 2480      1381            add     a,#0x80
+04F9 FC        1382            mov     r4,a
+04FA ED        1383            mov     a,r5
+04FB 34FF      1384            addc    a,#0xff
+04FD FD        1385            mov     r5,a
+04FE EC        1386            mov     a,r4
+04FF C3        1387            clr     c
+0500 9570      1388            subb    a,_main_off_y_1_96
+0502 F5D0      1389            mov     _main_joy_y_1_96,a
+0504 ED        1390            mov     a,r5
+0505 9571      1391            subb    a,(_main_off_y_1_96 + 1)
+0507 F5D1      1392            mov     (_main_joy_y_1_96 + 1),a
+0509           1393   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:358: acc_x=rbuf[2]*4; 
+0509 E582      1394            mov     a,(_main_rbuf_1_96 + 0x0002)
+050B 75F004    1395            mov     b,#0x04
+050E A4        1396            mul     ab
+050F F5C0      1397            mov     _main_acc_x_1_96,a
+0511 85F0C1    1398            mov     (_main_acc_x_1_96 + 1),b
+0514           1399   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:359: acc_y=rbuf[3]*4;
+0514 E583      1400            mov     a,(_main_rbuf_1_96 + 0x0003)
+0516 75F004    1401            mov     b,#0x04
+0519 A4        1402            mul     ab
+051A F510      1403            mov     _main_acc_y_1_96,a
+051C 85F011    1404            mov     (_main_acc_y_1_96 + 1),b
+051F           1405   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:360: acc_z=rbuf[4]*4;
+051F E584      1406            mov     a,(_main_rbuf_1_96 + 0x0004)
+0521 75F004    1407            mov     b,#0x04
+0524 A4        1408            mul     ab
+0525 F560      1409            mov     _main_acc_z_1_96,a
+0527 85F061    1410            mov     (_main_acc_z_1_96 + 1),b
+052A           1411   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:362: but1=(rbuf[5] & 0x01)?1:0;
+052A E585      1412            mov     a,(_main_rbuf_1_96 + 0x0005)
+052C 13        1413            rrc     a
+052D 92E0      1414            mov     _main_but1_1_96,c
+052F           1415   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:363: but2=(rbuf[5] & 0x02)?1:0;
+052F E585      1416            mov     a,(_main_rbuf_1_96 + 0x0005)
+0531 A2E1      1417            mov     c,acc.1
+0533 9220      1418            mov     _main_but2_1_96,c
+0535           1419   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:364: if (rbuf[5] & 0x04) acc_x+=2;
+0535 E585      1420            mov     a,(_main_rbuf_1_96 + 0x0005)
+0537 30E2B0    1421            jnb     acc.2,L013002?
+053A 7402      1422            mov     a,#0x02
+053C 25C0      1423            add     a,_main_acc_x_1_96
+053E F5C0      1424            mov     _main_acc_x_1_96,a
+0540 E4        1425            clr     a
+0541 35C1      1426            addc    a,(_main_acc_x_1_96 + 1)
+0543 F5C1      1427            mov     (_main_acc_x_1_96 + 1),a
+0545           1428   L013002?:
+0545           1429   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:365: if (rbuf[5] & 0x08) acc_x+=1;
+0545 E585      1430            mov     a,(_main_rbuf_1_96 + 0x0005)
+0547 30E3F0    1431            jnb     acc.3,L013004?
+054A 05C0      1432            inc     _main_acc_x_1_96
+054C E4        1433            clr     a
+054D B5C030    1434            cjne    a,_main_acc_x_1_96,L013049?
+0550 05C1      1435            inc     (_main_acc_x_1_96 + 1)
+0552           1436   L013049?:
+0552           1437   L013004?:
+0552           1438   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:366: if (rbuf[5] & 0x10) acc_y+=2;
+0552 E585      1439            mov     a,(_main_rbuf_1_96 + 0x0005)
+0554 30E470    1440            jnb     acc.4,L013006?
+0557 7402      1441            mov     a,#0x02
+0559 2510      1442            add     a,_main_acc_y_1_96
+055B F510      1443            mov     _main_acc_y_1_96,a
+055D E4        1444            clr     a
+055E 3511      1445            addc    a,(_main_acc_y_1_96 + 1)
+0560 F511      1446            mov     (_main_acc_y_1_96 + 1),a
+0562           1447   L013006?:
+0562           1448   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:367: if (rbuf[5] & 0x20) acc_y+=1;
+0562 E585      1449            mov     a,(_main_rbuf_1_96 + 0x0005)
+0564 30E5B0    1450            jnb     acc.5,L013008?
+0567 0510      1451            inc     _main_acc_y_1_96
+0569 E4        1452            clr     a
+056A B510F0    1453            cjne    a,_main_acc_y_1_96,L013052?
+056D 0511      1454            inc     (_main_acc_y_1_96 + 1)
+056F           1455   L013052?:
+056F           1456   L013008?:
+056F           1457   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:368: if (rbuf[5] & 0x40) acc_z+=2;
+056F E585      1458            mov     a,(_main_rbuf_1_96 + 0x0005)
+0571 30E630    1459            jnb     acc.6,L013010?
+0574 7402      1460            mov     a,#0x02
+0576 2560      1461            add     a,_main_acc_z_1_96
+0578 F560      1462            mov     _main_acc_z_1_96,a
+057A E4        1463            clr     a
+057B 3561      1464            addc    a,(_main_acc_z_1_96 + 1)
+057D F561      1465            mov     (_main_acc_z_1_96 + 1),a
+057F           1466   L013010?:
+057F           1467   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:369: if (rbuf[5] & 0x80) acc_z+=1;
+057F E585      1468            mov     a,(_main_rbuf_1_96 + 0x0005)
+0581 30E770    1469            jnb     acc.7,L013012?
+0584 0560      1470            inc     _main_acc_z_1_96
+0586 E4        1471            clr     a
+0587 B560B0    1472            cjne    a,_main_acc_z_1_96,L013055?
+058A 0561      1473            inc     (_main_acc_z_1_96 + 1)
+058C           1474   L013055?:
+058C           1475   L013012?:
+058C           1476   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:372: but1?'1':'0', but2?'1':'0', joy_x, joy_y, acc_x, acc_y, acc_z);
+058C 3020F0    1477            jnb     _main_but2_1_96,L013030?
+058F 7A31      1478            mov     r2,#0x31
+0591 8001      1479            sjmp    L013031?
+0593           1480   L013030?:
+0593 7A30      1481            mov     r2,#0x30
+0595           1482   L013031?:
+0595 EA        1483            mov     a,r2
+0596 33        1484            rlc     a
+0597 95E0      1485            subb    a,acc
+0599 FB        1486            mov     r3,a
+059A 30E070    1487            jnb     _main_but1_1_96,L013032?
+059D 75A031    1488            mov     _main_sloc0_1_0,#0x31
+05A0 8001      1489            sjmp    L013033?
+05A2           1490   L013032?:
+05A2 75A030    1491            mov     _main_sloc0_1_0,#0x30
+05A5           1492   L013033?:
+05A5 E5A0      1493            mov     a,_main_sloc0_1_0
+05A7 FC        1494            mov     r4,a
+05A8 33        1495            rlc     a
+05A9 95E0      1496            subb    a,acc
+05AB FD        1497            mov     r5,a
+05AC           1498   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:371: printf("Buttons(Z:%c, C:%c) Joystick(%4d, %4d) Accelerometer(%3d, %3d, %3d)\x1b[0J\r",
+05AC C006      1499            push    ar6
+05AE C007      1500            push    ar7
+05B0 C060      1501            push    _main_acc_z_1_96
+05B2 C061      1502            push    (_main_acc_z_1_96 + 1)
+05B4 C010      1503            push    _main_acc_y_1_96
+05B6 C011      1504            push    (_main_acc_y_1_96 + 1)
+05B8 C0C0      1505            push    _main_acc_x_1_96
+05BA C0C1      1506            push    (_main_acc_x_1_96 + 1)
+05BC C0D0      1507            push    _main_joy_y_1_96
+05BE C0D1      1508            push    (_main_joy_y_1_96 + 1)
+05C0 C006      1509            push    ar6
+05C2 C007      1510            push    ar7
+05C4 C002      1511            push    ar2
+05C6 C003      1512            push    ar3
+05C8 C004      1513            push    ar4
+05CA C005      1514            push    ar5
+05CC 74F0      1515            mov     a,#__str_5
+05CE C0E0      1516            push    acc
+05D0 74A3      1517            mov     a,#(__str_5 >> 8)
+05D2 C0E0      1518            push    acc
+05D4 7480      1519            mov     a,#0x80
+05D6 C0E0      1520            push    acc
+05D8 120100    1521            lcall   _printf
+05DB E581      1522            mov     a,sp
+05DD 24EF      1523            add     a,#0xef
+05DF F581      1524            mov     sp,a
+05E1 D007      1525            pop     ar7
+05E3 D006      1526            pop     ar6
+05E5           1527   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:425: if(joy_y==127){
+05E5 747F      1528            mov     a,#0x7F
+05E7 B5D030    1529            cjne    a,_main_joy_y_1_96,L013058?
+05EA E4        1530            clr     a
+05EB B5D130    1531            cjne    a,(_main_joy_y_1_96 + 1),L013058?
+05EE 8001      1532            sjmp    L013059?
+05F0           1533   L013058?:
+05F0 8001      1534            sjmp    L013023?
+05F2           1535   L013059?:
+05F2           1536   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:426: direction = 'u';
+05F2 7A75      1537            mov     r2,#0x75
+05F4 8001      1538            sjmp    L013024?
+05F6           1539   L013023?:
+05F6           1540   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:428: else if(joy_y==-128){
+05F6 7480      1541            mov     a,#0x80
+05F8 B5D030    1542            cjne    a,_main_joy_y_1_96,L013020?
+05FB 74FF      1543            mov     a,#0xFF
+05FD B5D130    1544            cjne    a,(_main_joy_y_1_96 + 1),L013020?
+0600           1545   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:429: direction = 'd';
+0600 7A64      1546            mov     r2,#0x64
+0602 8001      1547            sjmp    L013024?
+0604           1548   L013020?:
+0604           1549   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:432: else if (joy_x==128){
+0604 BE8070    1550            cjne    r6,#0x80,L013017?
+0607 BF0070    1551            cjne    r7,#0x00,L013017?
+060A           1552   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:433: direction = 'r';
+060A 7A72      1553            mov     r2,#0x72
+060C 8001      1554            sjmp    L013024?
+060E           1555   L013017?:
+060E           1556   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:435: else if(joy_x==-127){
+060E BE81B0    1557            cjne    r6,#0x81,L013014?
+0611 BFFFB0    1558            cjne    r7,#0xFF,L013014?
+0614           1559   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:436: direction = 'l';
+0614 7A6C      1560            mov     r2,#0x6C
+0616 8001      1561            sjmp    L013024?
+0618           1562   L013014?:
+0618           1563   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:439: direction = 's';
+0618 7A73      1564            mov     r2,#0x73
+061A           1565   L013024?:
+061A           1566   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:441: printf(" %c\r",direction); 
+061A EA        1567            mov     a,r2
+061B FB        1568            mov     r3,a
+061C 33        1569            rlc     a
+061D 95E0      1570            subb    a,acc
+061F FC        1571            mov     r4,a
+0620 C002      1572            push    ar2
+0622 C003      1573            push    ar3
+0624 C004      1574            push    ar4
+0626 74F0      1575            mov     a,#__str_6
+0628 C0E0      1576            push    acc
+062A 74A5      1577            mov     a,#(__str_6 >> 8)
+062C C0E0      1578            push    acc
+062E 7480      1579            mov     a,#0x80
+0630 C0E0      1580            push    acc
+0632 120100    1581            lcall   _printf
+0635 E581      1582            mov     a,sp
+0637 24FB      1583            add     a,#0xfb
+0639 F581      1584            mov     sp,a
+063B D002      1585            pop     ar2
+063D           1586   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:451: SCON1 |= 0x02;
+063D 43D202    1587            orl     _SCON1,#0x02
+0640           1588   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:452: putchar1(direction);
+0640 8A82      1589            mov     dpl,r2
+0642 120100    1590            lcall   _putchar1
+0645           1591   ;        C:\Users\viral\Documents\uni stuff\291\project 2\motor_control_FINAL_sending.c:454: Timer4ms(100);
+0645 758264    1592            mov     dpl,#0x64
+0648 120100    1593            lcall   _Timer4ms
+064B 020100    1594            ljmp    L013026?
+064E           1595            rseg R_CSEG
+064E           1596   
+0000           1597            rseg R_XINIT
+0000           1598   
+0000           1599            rseg R_CONST
+0000           1600   __str_0:
+0000 45787465  1601            db 'Extension type: %02x  %02x  %02x  %02x  %02x  %02x'
+     6E73696F
+     6E207479
+     70653A20
+     25303278
+     20202530
+     32782020
+     25303278
+     20202530
+     32782020
+     25303278
+     20202530
+     3278
+0032 0A        1602            db 0x0A
+0033 00        1603            db 0x00
+0034           1604   __str_1:
+0034 31        1605            db '1'
+0035 0D        1606            db 0x0D
+0036 00        1607            db 0x00
+0037           1608   __str_2:
+0037 32        1609            db '2'
+0038 0D        1610            db 0x0D
+0039 00        1611            db 0x00
+003A           1612   __str_3:
+003A 33        1613            db '3'
+003B 0D        1614            db 0x0D
+003C 00        1615            db 0x00
+003D           1616   __str_4:
+003D 4F666673  1617            db 'Offset_X:%4d Offset_Y:%4d'
+     65745F58
+     3A253464
+     204F6666
+     7365745F
+     593A2534
+     64
+0056 0A        1618            db 0x0A
+0057 0A        1619            db 0x0A
+0058 00        1620            db 0x00
+0059           1621   __str_5:
+0059 42757474  1622            db 'Buttons(Z:%c, C:%c) Joystick(%4d, %4d) Accelerometer(%3d, %3'
+     6F6E7328
+     5A3A2563
+     2C20433A
+     25632920
+     4A6F7973
+     7469636B
+     28253464
+     2C202534
+     64292041
+     6363656C
+     65726F6D
+     65746572
+     28253364
+     2C202533
+0095 642C2025  1623            db 'd, %3d)'
+     336429
+009C 1B        1624            db 0x1B
+009D 5B304A    1625            db '[0J'
+00A0 0D        1626            db 0x0D
+00A1 00        1627            db 0x00
+00A2           1628   __str_6:
+00A2 202563    1629            db ' %c'
+00A5 0D        1630            db 0x0D
+00A6 00        1631            db 0x00
+00A7           1632   
+0003           1633            CSEG
+0003           1634   
+0003           1635   end

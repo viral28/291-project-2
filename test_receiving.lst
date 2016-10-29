@@ -1,0 +1,933 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1069 (Apr 23 2015) (MSVC)
+0000              4   ; This file was generated Fri Mar 25 21:34:35 2016
+0000              5   ;--------------------------------------------------------
+                  5   $name test_receiving
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _main
+0000             27            public _getchar1
+0000             28            public _putchar1
+0000             29            public _UART1_Init
+0000             30            public _Timer4ms
+0000             31            public _Timer2_ISR
+0000             32            public __c51_external_startup
+0000             33   ;--------------------------------------------------------
+0000             34   ; Special Function Registers
+0000             35   ;--------------------------------------------------------
+0000             36   _P0             DATA 0x80
+0000             37   _SP             DATA 0x81
+0000             38   _DPL            DATA 0x82
+0000             39   _DPH            DATA 0x83
+0000             40   _EMI0TC         DATA 0x84
+0000             41   _EMI0CF         DATA 0x85
+0000             42   _OSCLCN         DATA 0x86
+0000             43   _PCON           DATA 0x87
+0000             44   _TCON           DATA 0x88
+0000             45   _TMOD           DATA 0x89
+0000             46   _TL0            DATA 0x8a
+0000             47   _TL1            DATA 0x8b
+0000             48   _TH0            DATA 0x8c
+0000             49   _TH1            DATA 0x8d
+0000             50   _CKCON          DATA 0x8e
+0000             51   _PSCTL          DATA 0x8f
+0000             52   _P1             DATA 0x90
+0000             53   _TMR3CN         DATA 0x91
+0000             54   _TMR4CN         DATA 0x91
+0000             55   _TMR3RLL        DATA 0x92
+0000             56   _TMR4RLL        DATA 0x92
+0000             57   _TMR3RLH        DATA 0x93
+0000             58   _TMR4RLH        DATA 0x93
+0000             59   _TMR3L          DATA 0x94
+0000             60   _TMR4L          DATA 0x94
+0000             61   _TMR3H          DATA 0x95
+0000             62   _TMR4H          DATA 0x95
+0000             63   _USB0ADR        DATA 0x96
+0000             64   _USB0DAT        DATA 0x97
+0000             65   _SCON           DATA 0x98
+0000             66   _SCON0          DATA 0x98
+0000             67   _SBUF           DATA 0x99
+0000             68   _SBUF0          DATA 0x99
+0000             69   _CPT1CN         DATA 0x9a
+0000             70   _CPT0CN         DATA 0x9b
+0000             71   _CPT1MD         DATA 0x9c
+0000             72   _CPT0MD         DATA 0x9d
+0000             73   _CPT1MX         DATA 0x9e
+0000             74   _CPT0MX         DATA 0x9f
+0000             75   _P2             DATA 0xa0
+0000             76   _SPI0CFG        DATA 0xa1
+0000             77   _SPI0CKR        DATA 0xa2
+0000             78   _SPI0DAT        DATA 0xa3
+0000             79   _P0MDOUT        DATA 0xa4
+0000             80   _P1MDOUT        DATA 0xa5
+0000             81   _P2MDOUT        DATA 0xa6
+0000             82   _P3MDOUT        DATA 0xa7
+0000             83   _IE             DATA 0xa8
+0000             84   _CLKSEL         DATA 0xa9
+0000             85   _EMI0CN         DATA 0xaa
+0000             86   __XPAGE         DATA 0xaa
+0000             87   _SBCON1         DATA 0xac
+0000             88   _P4MDOUT        DATA 0xae
+0000             89   _PFE0CN         DATA 0xaf
+0000             90   _P3             DATA 0xb0
+0000             91   _OSCXCN         DATA 0xb1
+0000             92   _OSCICN         DATA 0xb2
+0000             93   _OSCICL         DATA 0xb3
+0000             94   _SBRLL1         DATA 0xb4
+0000             95   _SBRLH1         DATA 0xb5
+0000             96   _FLSCL          DATA 0xb6
+0000             97   _FLKEY          DATA 0xb7
+0000             98   _IP             DATA 0xb8
+0000             99   _CLKMUL         DATA 0xb9
+0000            100   _SMBTC          DATA 0xb9
+0000            101   _AMX0N          DATA 0xba
+0000            102   _AMX0P          DATA 0xbb
+0000            103   _ADC0CF         DATA 0xbc
+0000            104   _ADC0L          DATA 0xbd
+0000            105   _ADC0H          DATA 0xbe
+0000            106   _SFRPAGE        DATA 0xbf
+0000            107   _SMB0CN         DATA 0xc0
+0000            108   _SMB1CN         DATA 0xc0
+0000            109   _SMB0CF         DATA 0xc1
+0000            110   _SMB1CF         DATA 0xc1
+0000            111   _SMB0DAT        DATA 0xc2
+0000            112   _SMB1DAT        DATA 0xc2
+0000            113   _ADC0GTL        DATA 0xc3
+0000            114   _ADC0GTH        DATA 0xc4
+0000            115   _ADC0LTL        DATA 0xc5
+0000            116   _ADC0LTH        DATA 0xc6
+0000            117   _P4             DATA 0xc7
+0000            118   _TMR2CN         DATA 0xc8
+0000            119   _TMR5CN         DATA 0xc8
+0000            120   _REG01CN        DATA 0xc9
+0000            121   _TMR2RLL        DATA 0xca
+0000            122   _TMR5RLL        DATA 0xca
+0000            123   _TMR2RLH        DATA 0xcb
+0000            124   _TMR5RLH        DATA 0xcb
+0000            125   _TMR2L          DATA 0xcc
+0000            126   _TMR5L          DATA 0xcc
+0000            127   _TMR2H          DATA 0xcd
+0000            128   _TMR5H          DATA 0xcd
+0000            129   _SMB0ADM        DATA 0xce
+0000            130   _SMB1ADM        DATA 0xce
+0000            131   _SMB0ADR        DATA 0xcf
+0000            132   _SMB1ADR        DATA 0xcf
+0000            133   _PSW            DATA 0xd0
+0000            134   _REF0CN         DATA 0xd1
+0000            135   _SCON1          DATA 0xd2
+0000            136   _SBUF1          DATA 0xd3
+0000            137   _P0SKIP         DATA 0xd4
+0000            138   _P1SKIP         DATA 0xd5
+0000            139   _P2SKIP         DATA 0xd6
+0000            140   _USB0XCN        DATA 0xd7
+0000            141   _PCA0CN         DATA 0xd8
+0000            142   _PCA0MD         DATA 0xd9
+0000            143   _PCA0CPM0       DATA 0xda
+0000            144   _PCA0CPM1       DATA 0xdb
+0000            145   _PCA0CPM2       DATA 0xdc
+0000            146   _PCA0CPM3       DATA 0xdd
+0000            147   _PCA0CPM4       DATA 0xde
+0000            148   _P3SKIP         DATA 0xdf
+0000            149   _ACC            DATA 0xe0
+0000            150   _XBR0           DATA 0xe1
+0000            151   _XBR1           DATA 0xe2
+0000            152   _XBR2           DATA 0xe3
+0000            153   _IT01CF         DATA 0xe4
+0000            154   _CKCON1         DATA 0xe4
+0000            155   _SMOD1          DATA 0xe5
+0000            156   _EIE1           DATA 0xe6
+0000            157   _EIE2           DATA 0xe7
+0000            158   _ADC0CN         DATA 0xe8
+0000            159   _PCA0CPL1       DATA 0xe9
+0000            160   _PCA0CPH1       DATA 0xea
+0000            161   _PCA0CPL2       DATA 0xeb
+0000            162   _PCA0CPH2       DATA 0xec
+0000            163   _PCA0CPL3       DATA 0xed
+0000            164   _PCA0CPH3       DATA 0xee
+0000            165   _RSTSRC         DATA 0xef
+0000            166   _B              DATA 0xf0
+0000            167   _P0MDIN         DATA 0xf1
+0000            168   _P1MDIN         DATA 0xf2
+0000            169   _P2MDIN         DATA 0xf3
+0000            170   _P3MDIN         DATA 0xf4
+0000            171   _P4MDIN         DATA 0xf5
+0000            172   _EIP1           DATA 0xf6
+0000            173   _EIP2           DATA 0xf7
+0000            174   _SPI0CN         DATA 0xf8
+0000            175   _PCA0L          DATA 0xf9
+0000            176   _PCA0H          DATA 0xfa
+0000            177   _PCA0CPL0       DATA 0xfb
+0000            178   _PCA0CPH0       DATA 0xfc
+0000            179   _PCA0CPL4       DATA 0xfd
+0000            180   _PCA0CPH4       DATA 0xfe
+0000            181   _VDM0CN         DATA 0xff
+0000            182   _DPTR           DATA 0x8382
+0000            183   _TMR2RL         DATA 0xcbca
+0000            184   _TMR3RL         DATA 0x9392
+0000            185   _TMR4RL         DATA 0x9392
+0000            186   _TMR5RL         DATA 0xcbca
+0000            187   _TMR2           DATA 0xcdcc
+0000            188   _TMR3           DATA 0x9594
+0000            189   _TMR4           DATA 0x9594
+0000            190   _TMR5           DATA 0xcdcc
+0000            191   _SBRL1          DATA 0xb5b4
+0000            192   _ADC0           DATA 0xbebd
+0000            193   _ADC0GT         DATA 0xc4c3
+0000            194   _ADC0LT         DATA 0xc6c5
+0000            195   _PCA0           DATA 0xfaf9
+0000            196   _PCA0CP1        DATA 0xeae9
+0000            197   _PCA0CP2        DATA 0xeceb
+0000            198   _PCA0CP3        DATA 0xeeed
+0000            199   _PCA0CP0        DATA 0xfcfb
+0000            200   _PCA0CP4        DATA 0xfefd
+0000            201   ;--------------------------------------------------------
+0000            202   ; special function bits
+0000            203   ;--------------------------------------------------------
+0000            204   _P0_0           BIT 0x80
+0000            205   _P0_1           BIT 0x81
+0000            206   _P0_2           BIT 0x82
+0000            207   _P0_3           BIT 0x83
+0000            208   _P0_4           BIT 0x84
+0000            209   _P0_5           BIT 0x85
+0000            210   _P0_6           BIT 0x86
+0000            211   _P0_7           BIT 0x87
+0000            212   _TF1            BIT 0x8f
+0000            213   _TR1            BIT 0x8e
+0000            214   _TF0            BIT 0x8d
+0000            215   _TR0            BIT 0x8c
+0000            216   _IE1            BIT 0x8b
+0000            217   _IT1            BIT 0x8a
+0000            218   _IE0            BIT 0x89
+0000            219   _IT0            BIT 0x88
+0000            220   _P1_0           BIT 0x90
+0000            221   _P1_1           BIT 0x91
+0000            222   _P1_2           BIT 0x92
+0000            223   _P1_3           BIT 0x93
+0000            224   _P1_4           BIT 0x94
+0000            225   _P1_5           BIT 0x95
+0000            226   _P1_6           BIT 0x96
+0000            227   _P1_7           BIT 0x97
+0000            228   _S0MODE         BIT 0x9f
+0000            229   _SCON0_6        BIT 0x9e
+0000            230   _MCE0           BIT 0x9d
+0000            231   _REN0           BIT 0x9c
+0000            232   _TB80           BIT 0x9b
+0000            233   _RB80           BIT 0x9a
+0000            234   _TI0            BIT 0x99
+0000            235   _RI0            BIT 0x98
+0000            236   _SCON_6         BIT 0x9e
+0000            237   _MCE            BIT 0x9d
+0000            238   _REN            BIT 0x9c
+0000            239   _TB8            BIT 0x9b
+0000            240   _RB8            BIT 0x9a
+0000            241   _TI             BIT 0x99
+0000            242   _RI             BIT 0x98
+0000            243   _P2_0           BIT 0xa0
+0000            244   _P2_1           BIT 0xa1
+0000            245   _P2_2           BIT 0xa2
+0000            246   _P2_3           BIT 0xa3
+0000            247   _P2_4           BIT 0xa4
+0000            248   _P2_5           BIT 0xa5
+0000            249   _P2_6           BIT 0xa6
+0000            250   _P2_7           BIT 0xa7
+0000            251   _EA             BIT 0xaf
+0000            252   _ESPI0          BIT 0xae
+0000            253   _ET2            BIT 0xad
+0000            254   _ES0            BIT 0xac
+0000            255   _ET1            BIT 0xab
+0000            256   _EX1            BIT 0xaa
+0000            257   _ET0            BIT 0xa9
+0000            258   _EX0            BIT 0xa8
+0000            259   _P3_0           BIT 0xb0
+0000            260   _P3_1           BIT 0xb1
+0000            261   _P3_2           BIT 0xb2
+0000            262   _P3_3           BIT 0xb3
+0000            263   _P3_4           BIT 0xb4
+0000            264   _P3_5           BIT 0xb5
+0000            265   _P3_6           BIT 0xb6
+0000            266   _P3_7           BIT 0xb7
+0000            267   _IP_7           BIT 0xbf
+0000            268   _PSPI0          BIT 0xbe
+0000            269   _PT2            BIT 0xbd
+0000            270   _PS0            BIT 0xbc
+0000            271   _PT1            BIT 0xbb
+0000            272   _PX1            BIT 0xba
+0000            273   _PT0            BIT 0xb9
+0000            274   _PX0            BIT 0xb8
+0000            275   _MASTER0        BIT 0xc7
+0000            276   _TXMODE0        BIT 0xc6
+0000            277   _STA0           BIT 0xc5
+0000            278   _STO0           BIT 0xc4
+0000            279   _ACKRQ0         BIT 0xc3
+0000            280   _ARBLOST0       BIT 0xc2
+0000            281   _ACK0           BIT 0xc1
+0000            282   _SI0            BIT 0xc0
+0000            283   _MASTER1        BIT 0xc7
+0000            284   _TXMODE1        BIT 0xc6
+0000            285   _STA1           BIT 0xc5
+0000            286   _STO1           BIT 0xc4
+0000            287   _ACKRQ1         BIT 0xc3
+0000            288   _ARBLOST1       BIT 0xc2
+0000            289   _ACK1           BIT 0xc1
+0000            290   _SI1            BIT 0xc0
+0000            291   _TF2            BIT 0xcf
+0000            292   _TF2H           BIT 0xcf
+0000            293   _TF2L           BIT 0xce
+0000            294   _TF2LEN         BIT 0xcd
+0000            295   _TF2CEN         BIT 0xcc
+0000            296   _T2SPLIT        BIT 0xcb
+0000            297   _TR2            BIT 0xca
+0000            298   _T2CSS          BIT 0xc9
+0000            299   _T2XCLK         BIT 0xc8
+0000            300   _TF5H           BIT 0xcf
+0000            301   _TF5L           BIT 0xce
+0000            302   _TF5LEN         BIT 0xcd
+0000            303   _TMR5CN_4       BIT 0xcc
+0000            304   _T5SPLIT        BIT 0xcb
+0000            305   _TR5            BIT 0xca
+0000            306   _TMR5CN_1       BIT 0xc9
+0000            307   _T5XCLK         BIT 0xc8
+0000            308   _CY             BIT 0xd7
+0000            309   _AC             BIT 0xd6
+0000            310   _F0             BIT 0xd5
+0000            311   _RS1            BIT 0xd4
+0000            312   _RS0            BIT 0xd3
+0000            313   _OV             BIT 0xd2
+0000            314   _F1             BIT 0xd1
+0000            315   _PARITY         BIT 0xd0
+0000            316   _CF             BIT 0xdf
+0000            317   _CR             BIT 0xde
+0000            318   _PCA0CN_5       BIT 0xde
+0000            319   _CCF4           BIT 0xdc
+0000            320   _CCF3           BIT 0xdb
+0000            321   _CCF2           BIT 0xda
+0000            322   _CCF1           BIT 0xd9
+0000            323   _CCF0           BIT 0xd8
+0000            324   _ACC_7          BIT 0xe7
+0000            325   _ACC_6          BIT 0xe6
+0000            326   _ACC_5          BIT 0xe5
+0000            327   _ACC_4          BIT 0xe4
+0000            328   _ACC_3          BIT 0xe3
+0000            329   _ACC_2          BIT 0xe2
+0000            330   _ACC_1          BIT 0xe1
+0000            331   _ACC_0          BIT 0xe0
+0000            332   _AD0EN          BIT 0xef
+0000            333   _AD0TM          BIT 0xee
+0000            334   _AD0INT         BIT 0xed
+0000            335   _AD0BUSY        BIT 0xec
+0000            336   _AD0WINT        BIT 0xeb
+0000            337   _AD0CM2         BIT 0xea
+0000            338   _AD0CM1         BIT 0xe9
+0000            339   _AD0CM0         BIT 0xe8
+0000            340   _B_7            BIT 0xf7
+0000            341   _B_6            BIT 0xf6
+0000            342   _B_5            BIT 0xf5
+0000            343   _B_4            BIT 0xf4
+0000            344   _B_3            BIT 0xf3
+0000            345   _B_2            BIT 0xf2
+0000            346   _B_1            BIT 0xf1
+0000            347   _B_0            BIT 0xf0
+0000            348   _SPIF           BIT 0xff
+0000            349   _WCOL           BIT 0xfe
+0000            350   _MODF           BIT 0xfd
+0000            351   _RXOVRN         BIT 0xfc
+0000            352   _NSSMD1         BIT 0xfb
+0000            353   _NSSMD0         BIT 0xfa
+0000            354   _TXBMT          BIT 0xf9
+0000            355   _SPIEN          BIT 0xf8
+0000            356   ;--------------------------------------------------------
+0000            357   ; overlayable register banks
+0000            358   ;--------------------------------------------------------
+0000            359            rbank0 segment data overlay
+0000            360   ;--------------------------------------------------------
+0000            361   ; internal ram data
+0000            362   ;--------------------------------------------------------
+0000            363            rseg R_DSEG
+0000            364   _UART1_Init_sloc0_1_0:
+0000            365            ds 4
+0004            366   ;--------------------------------------------------------
+0004            367   ; overlayable items in internal ram 
+0004            368   ;--------------------------------------------------------
+0000            369            rseg    R_OSEG
+0000            370            rseg    R_OSEG
+0000            371   ;--------------------------------------------------------
+0000            372   ; indirectly addressable internal ram data
+0000            373   ;--------------------------------------------------------
+0000            374            rseg R_ISEG
+0000            375   ;--------------------------------------------------------
+0000            376   ; absolute internal ram data
+0000            377   ;--------------------------------------------------------
+0000            378            DSEG
+0000            379   ;--------------------------------------------------------
+0000            380   ; bit data
+0000            381   ;--------------------------------------------------------
+0000            382            rseg R_BSEG
+0000            383   ;--------------------------------------------------------
+0000            384   ; paged external ram data
+0000            385   ;--------------------------------------------------------
+0000            386            rseg R_PSEG
+0000            387   ;--------------------------------------------------------
+0000            388   ; external ram data
+0000            389   ;--------------------------------------------------------
+0000            390            rseg R_XSEG
+0000            391   ;--------------------------------------------------------
+0000            392   ; absolute external ram data
+0000            393   ;--------------------------------------------------------
+0000            394            XSEG
+0000            395   ;--------------------------------------------------------
+0000            396   ; external initialized ram data
+0000            397   ;--------------------------------------------------------
+0000            398            rseg R_IXSEG
+0000            399            rseg R_HOME
+0000            400            rseg R_GSINIT
+0000            401            rseg R_CSEG
+0000            402   ;--------------------------------------------------------
+0000            403   ; Reset entry point and interrupt vectors
+0000            404   ;--------------------------------------------------------
+0000            405            CSEG at 0x0000
+0000 020100     406            ljmp    _crt0
+002B            407            CSEG at 0x002b
+002B 020100     408            ljmp    _Timer2_ISR
+002E            409   ;--------------------------------------------------------
+002E            410   ; global & static initialisations
+002E            411   ;--------------------------------------------------------
+0000            412            rseg R_HOME
+0000            413            rseg R_GSINIT
+0000            414            rseg R_GSINIT
+0000            415   ;--------------------------------------------------------
+0000            416   ; data variables initialization
+0000            417   ;--------------------------------------------------------
+0000            418            rseg R_DINIT
+0000            419            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            420   ;--------------------------------------------------------
+0000            421   ; code
+0000            422   ;--------------------------------------------------------
+0000            423            rseg R_CSEG
+0000            424   ;------------------------------------------------------------
+0000            425   ;Allocation info for local variables in function '_c51_external_startup'
+0000            426   ;------------------------------------------------------------
+0000            427   ;------------------------------------------------------------
+0000            428   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:29: char _c51_external_startup (void)
+0000            429   ;        -----------------------------------------
+0000            430   ;         function _c51_external_startup
+0000            431   ;        -----------------------------------------
+0000            432   __c51_external_startup:
+0000            433            using   0
+0000            434   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:31: PCA0MD&=(~0x40) ;  // DISABLE WDT: clear Watchdog Enable bit
+0000 53D9BF     435            anl     _PCA0MD,#0xBF
+0003            436   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:32: VDM0CN=0x80;       // Enable VDD monitor
+0003 75FF80     437            mov     _VDM0CN,#0x80
+0006            438   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:33: RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
+0006 75EF06     439            mov     _RSTSRC,#0x06
+0009            440   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:41: CLKSEL|=0b_0000_0011; // SYSCLK derived from the Internal High-Frequency Oscillator / 1.
+0009 43A903     441            orl     _CLKSEL,#0x03
+000C            442   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:45: OSCICN |= 0x03; // Configure internal oscillator for its maximum frequency
+000C 43B203     443            orl     _OSCICN,#0x03
+000F            444   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:48: TH1 = 0x10000-((SYSCLK/BAUDRATE)/2L);
+000F 758D30     445            mov     _TH1,#0x30
+0012            446   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:49: CKCON &= ~0x0B;                  // T1M = 1; SCA1:0 = xx
+0012 538EF4     447            anl     _CKCON,#0xF4
+0015            448   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:50: CKCON |=  0x08;
+0015 438E08     449            orl     _CKCON,#0x08
+0018            450   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:64: TL1 = TH1;     // Init timer 1
+0018 858D8B     451            mov     _TL1,_TH1
+001B            452   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:65: TMOD &= 0x0f;  // Mask out timer 1 bits
+001B 53890F     453            anl     _TMOD,#0x0F
+001E            454   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:66: TMOD |= 0x20;  // TMOD: timer 1 in 8-bit autoreload                     
+001E 438920     455            orl     _TMOD,#0x20
+0021            456   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:67: TR1 = 1;       // Start timer1
+0021 D28E       457            setb    _TR1
+0023            458   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:68: SCON = 0x52;
+0023 759852     459            mov     _SCON,#0x52
+0026            460   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:71: P0MDOUT = 0x10;           // Enable Uart TX as push-pull output
+0026 75A410     461            mov     _P0MDOUT,#0x10
+0029            462   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:72: P2MDOUT |= 0b0000_0110;   // Make the LED (P2.2) a push-pull output.  P2.1 used for debuging.
+0029 43A606     463            orl     _P2MDOUT,#0x06
+002C            464   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:73: XBR0 = 0b0000_0101;       // Enable SMBus pins and UART pins P0.4(TX) and P0.5(RX)
+002C 75E105     465            mov     _XBR0,#0x05
+002F            466   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:74: XBR1 = 0x40;              // Enable crossbar and weak pull-ups
+002F 75E240     467            mov     _XBR1,#0x40
+0032            468   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:77: CKCON |= 0x04; // Timer0 clock source = SYSCLK
+0032 438E04     469            orl     _CKCON,#0x04
+0035            470   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:78: TMOD &= 0xf0;  // Mask out timer 1 bits
+0035 5389F0     471            anl     _TMOD,#0xF0
+0038            472   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:79: TMOD |= 0x02;  // Timer0 in 8-bit auto-reload mode
+0038 438902     473            orl     _TMOD,#0x02
+003B            474   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:81: TL0 = TH0 = 256-(SYSCLK/SMB_FREQUENCY/3);
+003B 758C60     475            mov     _TH0,#0x60
+003E 758A60     476            mov     _TL0,#0x60
+0041            477   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:82: TR0 = 1; // Enable timer 0
+0041 D28C       478            setb    _TR0
+0043            479   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:85: SMB0CF = INH | EXTHOLD | SMBTOE | SMBFTE ;
+0043 75C15C     480            mov     _SMB0CF,#0x5C
+0046            481   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:86: SMB0CF |= ENSMB;  // Enable SMBus
+0046 43C180     482            orl     _SMB0CF,#0x80
+0049            483   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:88: LED = LED_OFF;
+0049 D2A2       484            setb    _P2_2
+004B            485   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:91: TMR2CN=0x00;   // Stop Timer2; Clear TF2;
+004B 75C800     486            mov     _TMR2CN,#0x00
+004E            487   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:92: CKCON|=0b_0001_0000;
+004E 438E10     488            orl     _CKCON,#0x10
+0051            489   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:93: TMR2RL=(-(SYSCLK/(2*48))/(100L)); // Initialize reload value
+0051 75CA78     490            mov     _TMR2RL,#0x78
+0054 75CBEC     491            mov     (_TMR2RL >> 8),#0xEC
+0057            492   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:94: TMR2=0xffff;   // Set to reload immediately
+0057 75CCFF     493            mov     _TMR2,#0xFF
+005A 75CDFF     494            mov     (_TMR2 >> 8),#0xFF
+005D            495   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:95: ET2=1;         // Enable Timer2 interrupts
+005D D2AD       496            setb    _ET2
+005F            497   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:96: TR2=1;         // Start Timer2
+005F D2CA       498            setb    _TR2
+0061            499   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:98: EA=1; // Enable interrupts
+0061 D2AF       500            setb    _EA
+0063            501   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:100: return 0;
+0063 758200     502            mov     dpl,#0x00
+0066 22         503            ret
+0067            504   ;------------------------------------------------------------
+0067            505   ;Allocation info for local variables in function 'Timer2_ISR'
+0067            506   ;------------------------------------------------------------
+0067            507   ;------------------------------------------------------------
+0067            508   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:103: void Timer2_ISR (void) interrupt 5
+0067            509   ;        -----------------------------------------
+0067            510   ;         function Timer2_ISR
+0067            511   ;        -----------------------------------------
+0067            512   _Timer2_ISR:
+0067            513   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:122: }
+0067 32         514            reti
+0068            515   ;        eliminated unneeded push/pop psw
+0068            516   ;        eliminated unneeded push/pop dpl
+0068            517   ;        eliminated unneeded push/pop dph
+0068            518   ;        eliminated unneeded push/pop b
+0068            519   ;        eliminated unneeded push/pop acc
+0068            520   ;------------------------------------------------------------
+0068            521   ;Allocation info for local variables in function 'Timer4ms'
+0068            522   ;------------------------------------------------------------
+0068            523   ;ms                        Allocated to registers r2 
+0068            524   ;i                         Allocated to registers r4 
+0068            525   ;k                         Allocated to registers r3 
+0068            526   ;------------------------------------------------------------
+0068            527   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:125: void Timer4ms(unsigned char ms)
+0068            528   ;        -----------------------------------------
+0068            529   ;         function Timer4ms
+0068            530   ;        -----------------------------------------
+0068            531   _Timer4ms:
+0068 AA82       532            mov     r2,dpl
+006A            533   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:130: k=SFRPAGE;
+006A ABBF       534            mov     r3,_SFRPAGE
+006C            535   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:131: SFRPAGE=0xf;
+006C 75BF0F     536            mov     _SFRPAGE,#0x0F
+006F            537   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:133: CKCON1|=0b_0000_0001;
+006F 43E401     538            orl     _CKCON1,#0x01
+0072            539   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:135: TMR4RL = 65536-(SYSCLK/1000L); // Set Timer4 to overflow in 1 ms.
+0072 759280     540            mov     _TMR4RL,#0x80
+0075 759344     541            mov     (_TMR4RL >> 8),#0x44
+0078            542   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:136: TMR4 = TMR4RL;                 // Initialize Timer4 for first overflow
+0078 859294     543            mov     _TMR4,_TMR4RL
+007B 859395     544            mov     (_TMR4 >> 8),(_TMR4RL >> 8)
+007E            545   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:138: TMR4CN = 0x04;                 // Start Timer4 and clear overflow flag
+007E 759104     546            mov     _TMR4CN,#0x04
+0081            547   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:139: for (i = 0; i < ms; i++)       // Count <ms> overflows
+0081 7C00       548            mov     r4,#0x00
+0083            549   L004004?:
+0083 C3         550            clr     c
+0084 EC         551            mov     a,r4
+0085 9A         552            subb    a,r2
+0086 5001       553            jnc     L004007?
+0088            554   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:141: while (!(TMR4CN & 0x80));  // Wait for overflow
+0088            555   L004001?:
+0088 E591       556            mov     a,_TMR4CN
+008A 30E7E8     557            jnb     acc.7,L004001?
+008D            558   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:142: TMR4CN &= ~(0x80);         // Clear overflow indicator
+008D 53917F     559            anl     _TMR4CN,#0x7F
+0090            560   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:139: for (i = 0; i < ms; i++)       // Count <ms> overflows
+0090 0C         561            inc     r4
+0091 8001       562            sjmp    L004004?
+0093            563   L004007?:
+0093            564   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:144: TMR4CN = 0 ;                   // Stop Timer4 and clear overflow flag
+0093 759100     565            mov     _TMR4CN,#0x00
+0096            566   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:145: SFRPAGE=k;       
+0096 8BBF       567            mov     _SFRPAGE,r3
+0098 22         568            ret
+0099            569   ;------------------------------------------------------------
+0099            570   ;Allocation info for local variables in function 'UART1_Init'
+0099            571   ;------------------------------------------------------------
+0099            572   ;baudrate                  Allocated to registers r2 r3 r4 r5 
+0099            573   ;sloc0                     Allocated with name '_UART1_Init_sloc0_1_0'
+0099            574   ;------------------------------------------------------------
+0099            575   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:148: void UART1_Init (unsigned long baudrate)
+0099            576   ;        -----------------------------------------
+0099            577   ;         function UART1_Init
+0099            578   ;        -----------------------------------------
+0099            579   _UART1_Init:
+0099 AA82       580            mov     r2,dpl
+009B AB83       581            mov     r3,dph
+009D ACF0       582            mov     r4,b
+009F FD         583            mov     r5,a
+00A0            584   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:150: SMOD1 = 0x0C; // no parity, 8 data bits, 1 stop bit
+00A0 75E50C     585            mov     _SMOD1,#0x0C
+00A3            586   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:151: SCON1 = 0x10;
+00A3 75D210     587            mov     _SCON1,#0x10
+00A6            588   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:152: if (((SYSCLK/baudrate)/2L)/0xFFFFL < 1){
+00A6 8A00       589            mov     __divulong_PARM_2,r2
+00A8 8B01       590            mov     (__divulong_PARM_2 + 1),r3
+00AA 8C02       591            mov     (__divulong_PARM_2 + 2),r4
+00AC 8D03       592            mov     (__divulong_PARM_2 + 3),r5
+00AE 906C00     593            mov     dptr,#0x6C00
+00B1 75F0DC     594            mov     b,#0xDC
+00B4 7402       595            mov     a,#0x02
+00B6 120100     596            lcall   __divulong
+00B9 AA82       597            mov     r2,dpl
+00BB AB83       598            mov     r3,dph
+00BD ACF0       599            mov     r4,b
+00BF C3         600            clr     c
+00C0 13         601            rrc     a
+00C1 F5AB       602            mov     (_UART1_Init_sloc0_1_0 + 3),a
+00C3 EC         603            mov     a,r4
+00C4 13         604            rrc     a
+00C5 F5AA       605            mov     (_UART1_Init_sloc0_1_0 + 2),a
+00C7 EB         606            mov     a,r3
+00C8 13         607            rrc     a
+00C9 F5A9       608            mov     (_UART1_Init_sloc0_1_0 + 1),a
+00CB EA         609            mov     a,r2
+00CC 13         610            rrc     a
+00CD F5A8       611            mov     _UART1_Init_sloc0_1_0,a
+00CF 7500FF     612            mov     __divulong_PARM_2,#0xFF
+00D2 7501FF     613            mov     (__divulong_PARM_2 + 1),#0xFF
+00D5 750200     614            mov     (__divulong_PARM_2 + 2),#0x00
+00D8 750300     615            mov     (__divulong_PARM_2 + 3),#0x00
+00DB 85A882     616            mov     dpl,_UART1_Init_sloc0_1_0
+00DE 85A983     617            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+00E1 85AAF0     618            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+00E4 E5AB       619            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+00E6 120100     620            lcall   __divulong
+00E9 AE82       621            mov     r6,dpl
+00EB AF83       622            mov     r7,dph
+00ED A8F0       623            mov     r0,b
+00EF F9         624            mov     r1,a
+00F0 C3         625            clr     c
+00F1 EE         626            mov     a,r6
+00F2 9401       627            subb    a,#0x01
+00F4 EF         628            mov     a,r7
+00F5 9400       629            subb    a,#0x00
+00F7 E8         630            mov     a,r0
+00F8 9400       631            subb    a,#0x00
+00FA E9         632            mov     a,r1
+00FB 9400       633            subb    a,#0x00
+00FD 5001       634            jnc     L005008?
+00FF            635   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:153: SBRL1 = 0x10000L-((SYSCLK/baudrate)/2L);
+00FF E4         636            clr     a
+0100 C3         637            clr     c
+0101 95A8       638            subb    a,_UART1_Init_sloc0_1_0
+0103 FA         639            mov     r2,a
+0104 E4         640            clr     a
+0105 95A9       641            subb    a,(_UART1_Init_sloc0_1_0 + 1)
+0107 FB         642            mov     r3,a
+0108 7401       643            mov     a,#0x01
+010A 95AA       644            subb    a,(_UART1_Init_sloc0_1_0 + 2)
+010C FC         645            mov     r4,a
+010D E4         646            clr     a
+010E 95AB       647            subb    a,(_UART1_Init_sloc0_1_0 + 3)
+0110 FD         648            mov     r5,a
+0111 8AB4       649            mov     _SBRL1,r2
+0113 8BB5       650            mov     (_SBRL1 >> 8),r3
+0115            651   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:154: SBCON1 |= 0x03; // set prescaler to 1
+0115 43AC03     652            orl     _SBCON1,#0x03
+0118 020100     653            ljmp    L005009?
+011B            654   L005008?:
+011B            655   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:156: else if (((SYSCLK/baudrate)/2L)/0xFFFFL < 4){
+011B C3         656            clr     c
+011C EE         657            mov     a,r6
+011D 9404       658            subb    a,#0x04
+011F EF         659            mov     a,r7
+0120 9400       660            subb    a,#0x00
+0122 E8         661            mov     a,r0
+0123 9400       662            subb    a,#0x00
+0125 E9         663            mov     a,r1
+0126 9400       664            subb    a,#0x00
+0128 5001       665            jnc     L005005?
+012A            666   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:157: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/4L);
+012A E5AB       667            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+012C C3         668            clr     c
+012D 13         669            rrc     a
+012E FD         670            mov     r5,a
+012F E5AA       671            mov     a,(_UART1_Init_sloc0_1_0 + 2)
+0131 13         672            rrc     a
+0132 FC         673            mov     r4,a
+0133 E5A9       674            mov     a,(_UART1_Init_sloc0_1_0 + 1)
+0135 13         675            rrc     a
+0136 FB         676            mov     r3,a
+0137 E5A8       677            mov     a,_UART1_Init_sloc0_1_0
+0139 13         678            rrc     a
+013A FA         679            mov     r2,a
+013B ED         680            mov     a,r5
+013C C3         681            clr     c
+013D 13         682            rrc     a
+013E FD         683            mov     r5,a
+013F EC         684            mov     a,r4
+0140 13         685            rrc     a
+0141 FC         686            mov     r4,a
+0142 EB         687            mov     a,r3
+0143 13         688            rrc     a
+0144 FB         689            mov     r3,a
+0145 EA         690            mov     a,r2
+0146 13         691            rrc     a
+0147 FA         692            mov     r2,a
+0148 E4         693            clr     a
+0149 C3         694            clr     c
+014A 9A         695            subb    a,r2
+014B FA         696            mov     r2,a
+014C E4         697            clr     a
+014D 9B         698            subb    a,r3
+014E FB         699            mov     r3,a
+014F 7401       700            mov     a,#0x01
+0151 9C         701            subb    a,r4
+0152 FC         702            mov     r4,a
+0153 E4         703            clr     a
+0154 9D         704            subb    a,r5
+0155 FD         705            mov     r5,a
+0156 8AB4       706            mov     _SBRL1,r2
+0158 8BB5       707            mov     (_SBRL1 >> 8),r3
+015A            708   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:158: SBCON1 &= ~0x03;
+015A 53ACFC     709            anl     _SBCON1,#0xFC
+015D            710   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:159: SBCON1 |= 0x01; // set prescaler to 4
+015D 43AC01     711            orl     _SBCON1,#0x01
+0160 020100     712            ljmp    L005009?
+0163            713   L005005?:
+0163            714   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:161: else if (((SYSCLK/baudrate)/2L)/0xFFFFL < 12){
+0163 C3         715            clr     c
+0164 EE         716            mov     a,r6
+0165 940C       717            subb    a,#0x0C
+0167 EF         718            mov     a,r7
+0168 9400       719            subb    a,#0x00
+016A E8         720            mov     a,r0
+016B 9400       721            subb    a,#0x00
+016D E9         722            mov     a,r1
+016E 9400       723            subb    a,#0x00
+0170 5001       724            jnc     L005002?
+0172            725   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:162: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/12L);
+0172 75000C     726            mov     __divulong_PARM_2,#0x0C
+0175 E4         727            clr     a
+0176 F501       728            mov     (__divulong_PARM_2 + 1),a
+0178 F502       729            mov     (__divulong_PARM_2 + 2),a
+017A F503       730            mov     (__divulong_PARM_2 + 3),a
+017C 85A882     731            mov     dpl,_UART1_Init_sloc0_1_0
+017F 85A983     732            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+0182 85AAF0     733            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+0185 E5AB       734            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+0187 120100     735            lcall   __divulong
+018A AA82       736            mov     r2,dpl
+018C AB83       737            mov     r3,dph
+018E ACF0       738            mov     r4,b
+0190 FD         739            mov     r5,a
+0191 E4         740            clr     a
+0192 C3         741            clr     c
+0193 9A         742            subb    a,r2
+0194 FA         743            mov     r2,a
+0195 E4         744            clr     a
+0196 9B         745            subb    a,r3
+0197 FB         746            mov     r3,a
+0198 7401       747            mov     a,#0x01
+019A 9C         748            subb    a,r4
+019B FC         749            mov     r4,a
+019C E4         750            clr     a
+019D 9D         751            subb    a,r5
+019E FD         752            mov     r5,a
+019F 8AB4       753            mov     _SBRL1,r2
+01A1 8BB5       754            mov     (_SBRL1 >> 8),r3
+01A3            755   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:163: SBCON1 &= ~0x03; // set prescaler to 12
+01A3 53ACFC     756            anl     _SBCON1,#0xFC
+01A6 8001       757            sjmp    L005009?
+01A8            758   L005002?:
+01A8            759   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:166: SBRL1 = 0x10000L-(((SYSCLK/baudrate)/2L)/48L);
+01A8 750030     760            mov     __divulong_PARM_2,#0x30
+01AB E4         761            clr     a
+01AC F501       762            mov     (__divulong_PARM_2 + 1),a
+01AE F502       763            mov     (__divulong_PARM_2 + 2),a
+01B0 F503       764            mov     (__divulong_PARM_2 + 3),a
+01B2 85A882     765            mov     dpl,_UART1_Init_sloc0_1_0
+01B5 85A983     766            mov     dph,(_UART1_Init_sloc0_1_0 + 1)
+01B8 85AAF0     767            mov     b,(_UART1_Init_sloc0_1_0 + 2)
+01BB E5AB       768            mov     a,(_UART1_Init_sloc0_1_0 + 3)
+01BD 120100     769            lcall   __divulong
+01C0 AA82       770            mov     r2,dpl
+01C2 AB83       771            mov     r3,dph
+01C4 ACF0       772            mov     r4,b
+01C6 FD         773            mov     r5,a
+01C7 E4         774            clr     a
+01C8 C3         775            clr     c
+01C9 9A         776            subb    a,r2
+01CA FA         777            mov     r2,a
+01CB E4         778            clr     a
+01CC 9B         779            subb    a,r3
+01CD FB         780            mov     r3,a
+01CE 7401       781            mov     a,#0x01
+01D0 9C         782            subb    a,r4
+01D1 FC         783            mov     r4,a
+01D2 E4         784            clr     a
+01D3 9D         785            subb    a,r5
+01D4 FD         786            mov     r5,a
+01D5 8AB4       787            mov     _SBRL1,r2
+01D7 8BB5       788            mov     (_SBRL1 >> 8),r3
+01D9            789   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:167: SBCON1 &= ~0x03;
+01D9 53ACFC     790            anl     _SBCON1,#0xFC
+01DC            791   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:168: SBCON1 |= 0x02; // set prescaler to ?
+01DC 43AC02     792            orl     _SBCON1,#0x02
+01DF            793   L005009?:
+01DF            794   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:170: SCON1 |= 0x02; // indicate ready for TX
+01DF 43D202     795            orl     _SCON1,#0x02
+01E2            796   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:171: SBCON1 |= 0x40; // enable baud rate generator
+01E2 43AC40     797            orl     _SBCON1,#0x40
+01E5            798   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:173: XBR2=0x01; // Enable UART1 on P0.0(TX1) and P0.1(RX1)
+01E5 75E301     799            mov     _XBR2,#0x01
+01E8            800   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:174: XBR1=0x40; // Enable crossbar and weak pull-ups
+01E8 75E240     801            mov     _XBR1,#0x40
+01EB 22         802            ret
+01EC            803   ;------------------------------------------------------------
+01EC            804   ;Allocation info for local variables in function 'putchar1'
+01EC            805   ;------------------------------------------------------------
+01EC            806   ;c                         Allocated to registers r2 
+01EC            807   ;------------------------------------------------------------
+01EC            808   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:177: void putchar1 (char c)
+01EC            809   ;        -----------------------------------------
+01EC            810   ;         function putchar1
+01EC            811   ;        -----------------------------------------
+01EC            812   _putchar1:
+01EC AA82       813            mov     r2,dpl
+01EE            814   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:179: if (c == '\n' )
+01EE BA0A78     815            cjne    r2,#0x0A,L006006?
+01F1            816   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:181: while (!(SCON1 & 0x02));
+01F1            817   L006001?:
+01F1 E5D2       818            mov     a,_SCON1
+01F3 30E1B8     819            jnb     acc.1,L006001?
+01F6            820   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:182: SCON1 &= ~0x02;
+01F6 53D2FD     821            anl     _SCON1,#0xFD
+01F9            822   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:183: SBUF1 = '\r' ;
+01F9 75D30D     823            mov     _SBUF1,#0x0D
+01FC            824   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:185: while (!(SCON1 & 0x02));
+01FC            825   L006006?:
+01FC E5D2       826            mov     a,_SCON1
+01FE 30E178     827            jnb     acc.1,L006006?
+0201            828   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:186: SCON1 &= ~0x02;
+0201 53D2FD     829            anl     _SCON1,#0xFD
+0204            830   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:187: SBUF1 = c;
+0204 8AD3       831            mov     _SBUF1,r2
+0206 22         832            ret
+0207            833   ;------------------------------------------------------------
+0207            834   ;Allocation info for local variables in function 'getchar1'
+0207            835   ;------------------------------------------------------------
+0207            836   ;c                         Allocated to registers 
+0207            837   ;------------------------------------------------------------
+0207            838   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:190: char getchar1 (void)
+0207            839   ;        -----------------------------------------
+0207            840   ;         function getchar1
+0207            841   ;        -----------------------------------------
+0207            842   _getchar1:
+0207            843   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:193: printf("12  ");
+0207 74F8       844            mov     a,#__str_0
+0209 C0E0       845            push    acc
+020B 7493       846            mov     a,#(__str_0 >> 8)
+020D C0E0       847            push    acc
+020F 7480       848            mov     a,#0x80
+0211 C0E0       849            push    acc
+0213 120100     850            lcall   _printf
+0216 1581       851            dec     sp
+0218 1581       852            dec     sp
+021A 1581       853            dec     sp
+021C            854   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:194: while (!(SCON1 & 0x01));
+021C            855   L007001?:
+021C E5D2       856            mov     a,_SCON1
+021E 30E0B8     857            jnb     acc.0,L007001?
+0221            858   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:195: printf("13  ");
+0221 74F8       859            mov     a,#__str_1
+0223 C0E0       860            push    acc
+0225 7494       861            mov     a,#(__str_1 >> 8)
+0227 C0E0       862            push    acc
+0229 7480       863            mov     a,#0x80
+022B C0E0       864            push    acc
+022D 120100     865            lcall   _printf
+0230 1581       866            dec     sp
+0232 1581       867            dec     sp
+0234 1581       868            dec     sp
+0236            869   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:196: SCON1 &= ~0x01;
+0236 53D2FE     870            anl     _SCON1,#0xFE
+0239            871   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:197: c = SBUF1;
+0239 85D382     872            mov     dpl,_SBUF1
+023C            873   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:198: return (c);
+023C 22         874            ret
+023D            875   ;------------------------------------------------------------
+023D            876   ;Allocation info for local variables in function 'main'
+023D            877   ;------------------------------------------------------------
+023D            878   ;------------------------------------------------------------
+023D            879   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:202: void main (void)
+023D            880   ;        -----------------------------------------
+023D            881   ;         function main
+023D            882   ;        -----------------------------------------
+023D            883   _main:
+023D            884   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:204: UART1_Init(BAUDRATE);
+023D 90C200     885            mov     dptr,#0xC200
+0240 75F001     886            mov     b,#0x01
+0243 E4         887            clr     a
+0244 120100     888            lcall   _UART1_Init
+0247            889   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:207: while(1)
+0247            890   L008002?:
+0247            891   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:209: SCON1 |= 0x01;
+0247 43D201     892            orl     _SCON1,#0x01
+024A            893   ;        C:\Users\viral\Documents\uni stuff\291\project 2\test_receiving.c:210: printf("Received: %c\n",getchar1());
+024A 120100     894            lcall   _getchar1
+024D E582       895            mov     a,dpl
+024F FA         896            mov     r2,a
+0250 33         897            rlc     a
+0251 95E0       898            subb    a,acc
+0253 FB         899            mov     r3,a
+0254 C002       900            push    ar2
+0256 C003       901            push    ar3
+0258 7478       902            mov     a,#__str_2
+025A C0E0       903            push    acc
+025C 7495       904            mov     a,#(__str_2 >> 8)
+025E C0E0       905            push    acc
+0260 7480       906            mov     a,#0x80
+0262 C0E0       907            push    acc
+0264 120100     908            lcall   _printf
+0267 E581       909            mov     a,sp
+0269 24FB       910            add     a,#0xfb
+026B F581       911            mov     sp,a
+026D 8001       912            sjmp    L008002?
+026F            913            rseg R_CSEG
+026F            914   
+0000            915            rseg R_XINIT
+0000            916   
+0000            917            rseg R_CONST
+0000            918   __str_0:
+0000 31322020   919            db '12  '
+0004 00         920            db 0x00
+0005            921   __str_1:
+0005 31332020   922            db '13  '
+0009 00         923            db 0x00
+000A            924   __str_2:
+000A 52656365   925            db 'Received: %c'
+     69766564
+     3A202563
+0016 0A         926            db 0x0A
+0017 00         927            db 0x00
+0018            928   
+002E            929            CSEG
+002E            930   
+002E            931   end
